@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Comparison Tool</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="app-title">JSON Comparison Tool</h1>
+                <p class="app-tagline">Compare JSON objects with ID-based matching and API integration</p>
+            </div>
+            
+            <!-- Header Controls -->
+            <div class="header-controls">
+                <div class="view-mode-toggle">
+                    <button class="view-toggle-btn active" data-view="tree">
+                        <span class="icon">🌳</span> Tree View
+                    </button>
+                    <button class="view-toggle-btn" data-view="line">
+                        <span class="icon">📝</span> Line-by-Line
+                    </button>
+                    <button class="view-toggle-btn" data-view="split">
+                        <span class="icon">⚡</span> Split View
+                    </button>
+                    <button class="view-toggle-btn" data-view="unified">
+                        <span class="icon">📋</span> Unified
+                    </button>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn--outline btn--sm" id="dark-mode-toggle">🌙 Dark Mode</button>
+                    <button class="btn btn--outline btn--sm" id="help-btn">❓ Help</button>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-view="compare">
+                    <span>Compare</span>
+                </button>
+                <button class="nav-tab" data-view="api-fetch">
+                    <span>API Fetch</span>
+                </button>
+                <button class="nav-tab" data-view="settings">
+                    <span>Settings</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Compare View -->
+        <div id="compare-view" class="view active">
+            <div class="container">
+                <!-- Input Panels -->
+                <div class="json-panels">
+                    <!-- Left Panel -->
+                    <div class="json-panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">JSON 1</h3>
+                            <div class="panel-controls">
+                                <button class="btn btn--sm" id="paste-json-1">Paste JSON</button>
+                                <button class="btn btn--sm btn--outline" id="clear-json-1">Clear</button>
+                                <button class="btn btn--sm btn--outline" id="format-json-1">Format</button>
+                                <input type="file" id="upload-json-1" accept=".json" style="display: none;">
+                                <button class="btn btn--sm btn--outline" onclick="document.getElementById('upload-json-1').click()">Upload File</button>
+                            </div>
+                        </div>
+                        <div class="json-input-container">
+                            <textarea id="json-input-1" class="json-input" placeholder="Paste your first JSON here..."></textarea>
+                            <div class="input-info">
+                                <span class="char-count" id="char-count-1">0 characters</span>
+                                <span class="validation-status" id="validation-1"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Center Controls -->
+                    <div class="center-controls">
+                        <div class="control-group">
+                            <label for="id-key-input" class="form-label">ID Key or Path</label>
+                            <input type="text" id="id-key-input" class="form-control" placeholder="e.g., 'id' or 'user.id' or 'users[].id'" value="id">
+                        </div>
+                        
+                        <div class="control-group">
+                            <label for="comparison-mode" class="form-label">Comparison Mode</label>
+                            <select id="comparison-mode" class="form-control">
+                                <option value="exact">Exact Match</option>
+                                <option value="type">Type Only</option>
+                                <option value="ignore-order">Ignore Order</option>
+                                <option value="semantic">Semantic</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="array-matching" class="form-label">Array Matching</label>
+                            <select id="array-matching" class="form-control">
+                                <option value="index">By Index (Positional)</option>
+                                <option value="id" selected>By ID Field</option>
+                                <option value="hash">By Content Hash</option>
+                                <option value="best_match">Best Match (Similarity)</option>
+                            </select>
+                        </div>
+
+                        <!-- Advanced Settings -->
+                        <details class="advanced-settings">
+                            <summary class="settings-toggle">Advanced Settings</summary>
+                            <div class="settings-content">
+                                <div class="control-group">
+                                    <label class="form-label">Value Transformations</label>
+                                    <div class="checkbox-group">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" id="normalize-strings">
+                                            <span class="checkbox-text">Normalize strings (trim &amp; lowercase)</span>
+                                        </label>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" id="ignore-timestamps">
+                                            <span class="checkbox-text">Ignore timestamp fields</span>
+                                        </label>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" id="ignore-key-order" checked>
+                                            <span class="checkbox-text">Ignore key ordering</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label for="numeric-tolerance" class="form-label">Numeric Tolerance (epsilon)</label>
+                                    <input type="number" id="numeric-tolerance" class="form-control" value="0" step="0.0001" min="0">
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label for="include-paths" class="form-label">Include Paths (JSONPath patterns, one per line)</label>
+                                    <textarea id="include-paths" class="form-control" rows="3" placeholder="$.users[*].id
+$.data.profile
+$.settings.*"></textarea>
+                                    <button class="btn btn--outline btn--sm" id="path-examples">Show Examples</button>
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label for="exclude-paths" class="form-label">Exclude Paths (JSONPath patterns, one per line)</label>
+                                    <textarea id="exclude-paths" class="form-control" rows="3" placeholder="$.timestamp
+$.*.lastModified
+$.metadata.version"></textarea>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Statistics Panel -->
+                        <div class="stats-panel" id="stats-panel" style="display: none;">
+                            <h4>Comparison Statistics</h4>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <span class="stat-number" id="total-diffs">0</span>
+                                    <span class="stat-label">Total Differences</span>
+                                </div>
+                                <div class="stat-item stat-added">
+                                    <span class="stat-number" id="stat-added">0</span>
+                                    <span class="stat-label">Added</span>
+                                </div>
+                                <div class="stat-item stat-deleted">
+                                    <span class="stat-number" id="stat-deleted">0</span>
+                                    <span class="stat-label">Deleted</span>
+                                </div>
+                                <div class="stat-item stat-modified">
+                                    <span class="stat-number" id="stat-modified">0</span>
+                                    <span class="stat-label">Modified</span>
+                                </div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="match-progress"></div>
+                            </div>
+                            <div class="progress-text">Match: <span id="match-percentage">0</span>%</div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="btn btn--primary btn--lg" id="compare-btn">Compare JSONs</button>
+                            <button class="btn btn--secondary" id="generate-report-btn" disabled>📊 Generate Report</button>
+                            <button class="btn btn--outline" id="swap-btn">Swap JSONs</button>
+                            <button class="btn btn--outline" id="load-example">Load Example</button>
+                        </div>
+                    </div>
+
+                    <!-- Right Panel -->
+                    <div class="json-panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">JSON 2</h3>
+                            <div class="panel-controls">
+                                <button class="btn btn--sm" id="paste-json-2">Paste JSON</button>
+                                <button class="btn btn--sm btn--outline" id="clear-json-2">Clear</button>
+                                <button class="btn btn--sm btn--outline" id="format-json-2">Format</button>
+                                <input type="file" id="upload-json-2" accept=".json" style="display: none;">
+                                <button class="btn btn--sm btn--outline" onclick="document.getElementById('upload-json-2').click()">Upload File</button>
+                            </div>
+                        </div>
+                        <div class="json-input-container">
+                            <textarea id="json-input-2" class="json-input" placeholder="Paste your second JSON here..."></textarea>
+                            <div class="input-info">
+                                <span class="char-count" id="char-count-2">0 characters</span>
+                                <span class="validation-status" id="validation-2"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Panel -->
+                <div class="results-panel" id="results-panel" style="display: none;">
+                    <div class="results-header">
+                        <div class="results-title">
+                            <h3>Comparison Results</h3>
+                            <div class="diff-navigation">
+                                <button class="btn btn--outline btn--sm" id="prev-diff" disabled>← Previous</button>
+                                <span id="diff-counter">0 of 0</span>
+                                <button class="btn btn--outline btn--sm" id="next-diff" disabled>Next →</button>
+                            </div>
+                        </div>
+                        <div class="results-controls">
+                            <div class="filter-controls">
+                                <button class="filter-btn active" data-filter="all">All</button>
+                                <button class="filter-btn" data-filter="added">Added</button>
+                                <button class="filter-btn" data-filter="deleted">Deleted</button>
+                                <button class="filter-btn" data-filter="modified">Modified</button>
+                                <button class="filter-btn" data-filter="matched">Matched</button>
+                            </div>
+                            <input type="text" id="search-diffs" class="form-control search-input" placeholder="Search differences...">
+                            <button class="btn btn--primary btn--sm" id="generate-report-main">📊 Generate Report</button>
+                            <button class="btn btn--outline btn--sm" id="collapse-results">Collapse</button>
+                        </div>
+                    </div>
+                    
+                    <div class="results-tabs">
+                        <button class="results-tab active" data-tab="differences">Differences</button>
+                        <button class="results-tab" data-tab="line-by-line">Line-by-Line</button>
+                        <button class="results-tab" data-tab="side-by-side">Side-by-Side</button>
+                        <button class="results-tab" data-tab="summary">Summary</button>
+                        <button class="results-tab" data-tab="stats">Stats</button>
+                    </div>
+
+                    <div class="results-content">
+                        <div id="differences-tab" class="tab-content active">
+                            <div id="differences-list"></div>
+                        </div>
+                        <div id="line-by-line-tab" class="tab-content">
+                            <div class="line-by-line-container">
+                                <div class="line-header">
+                                    <div class="line-title">JSON 1</div>
+                                    <div class="line-title">JSON 2</div>
+                                </div>
+                                <div class="line-content" id="line-by-line-content">
+                                    <div class="line-panel" id="line-panel-1"></div>
+                                    <div class="line-panel" id="line-panel-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="side-by-side-tab" class="tab-content">
+                            <div id="side-by-side-view"></div>
+                        </div>
+                        <div id="summary-tab" class="tab-content">
+                            <div id="summary-stats"></div>
+                        </div>
+                        <div id="stats-tab" class="tab-content">
+                            <div id="detailed-stats"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Fetch View -->
+        <div id="api-fetch-view" class="view">
+            <div class="container">
+                <div class="api-panels">
+                    <!-- API 1 Panel -->
+                    <div class="api-panel">
+                        <h3 class="panel-title">API 1</h3>
+                        <div class="api-config">
+                            <div class="form-group">
+                                <label class="form-label">URL</label>
+                                <input type="url" id="api-1-url" class="form-control" placeholder="https://api.example.com/data">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Method</label>
+                                <select id="api-1-method" class="form-control">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                    <option value="PUT">PUT</option>
+                                    <option value="DELETE">DELETE</option>
+                                    <option value="PATCH">PATCH</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Headers</label>
+                                <div id="api-1-headers" class="headers-container">
+                                    <div class="header-row">
+                                        <input type="text" placeholder="Key" class="form-control header-key">
+                                        <input type="text" placeholder="Value" class="form-control header-value">
+                                        <button class="btn btn--outline btn--sm remove-header">×</button>
+                                    </div>
+                                </div>
+                                <button class="btn btn--outline btn--sm" id="add-header-1">Add Header</button>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Body (for POST/PUT)</label>
+                                <textarea id="api-1-body" class="form-control" rows="4" placeholder="Request body (JSON)"></textarea>
+                            </div>
+
+                            <button class="btn btn--primary" id="fetch-api-1">Fetch API 1</button>
+                        </div>
+                        
+                        <div class="api-response" id="api-1-response" style="display: none;">
+                            <h4>Response</h4>
+                            <div class="response-meta" id="api-1-meta"></div>
+                            <div class="response-body" id="api-1-response-body"></div>
+                            <button class="btn btn--outline btn--sm" id="use-response-1">Use Response</button>
+                        </div>
+                    </div>
+
+                    <!-- API 2 Panel -->
+                    <div class="api-panel">
+                        <h3 class="panel-title">API 2</h3>
+                        <div class="api-config">
+                            <div class="form-group">
+                                <label class="form-label">URL</label>
+                                <input type="url" id="api-2-url" class="form-control" placeholder="https://api.example.com/data">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Method</label>
+                                <select id="api-2-method" class="form-control">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                    <option value="PUT">PUT</option>
+                                    <option value="DELETE">DELETE</option>
+                                    <option value="PATCH">PATCH</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Headers</label>
+                                <div id="api-2-headers" class="headers-container">
+                                    <div class="header-row">
+                                        <input type="text" placeholder="Key" class="form-control header-key">
+                                        <input type="text" placeholder="Value" class="form-control header-value">
+                                        <button class="btn btn--outline btn--sm remove-header">×</button>
+                                    </div>
+                                </div>
+                                <button class="btn btn--outline btn--sm" id="add-header-2">Add Header</button>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Body (for POST/PUT)</label>
+                                <textarea id="api-2-body" class="form-control" rows="4" placeholder="Request body (JSON)"></textarea>
+                            </div>
+
+                            <button class="btn btn--primary" id="fetch-api-2">Fetch API 2</button>
+                        </div>
+                        
+                        <div class="api-response" id="api-2-response" style="display: none;">
+                            <h4>Response</h4>
+                            <div class="response-meta" id="api-2-meta"></div>
+                            <div class="response-body" id="api-2-response-body"></div>
+                            <button class="btn btn--outline btn--sm" id="use-response-2">Use Response</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-comparison">
+                    <button class="btn btn--primary btn--lg" id="compare-responses" style="display: none;">Compare Responses</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings View -->
+        <div id="settings-view" class="view">
+            <div class="container">
+                <div class="settings-panels">
+                    <div class="settings-panel">
+                        <h3>Comparison Settings</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Default ID Key/Path</label>
+                            <input type="text" id="default-id-key" class="form-control" value="id">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="auto-format" checked>
+                                <span class="checkbox-text">Auto-format JSON on paste</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="syntax-highlighting" checked>
+                                <span class="checkbox-text">Syntax highlighting</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Diff Display</label>
+                            <select id="diff-display" class="form-control">
+                                <option value="inline">Inline</option>
+                                <option value="side-by-side" selected>Side-by-Side</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Max JSON Size (KB)</label>
+                            <input type="range" id="max-size" min="100" max="10000" value="5000" class="range-input">
+                            <span id="max-size-value">5000 KB</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-panel">
+                        <h3>Display Settings</h3>
+
+                        <div class="form-group">
+                            <label class="form-label">Font Size</label>
+                            <select id="font-size" class="form-control">
+                                <option value="12px">Small (12px)</option>
+                                <option value="14px" selected>Medium (14px)</option>
+                                <option value="16px">Large (16px)</option>
+                                <option value="18px">Extra Large (18px)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Theme</label>
+                            <select id="theme-selector" class="form-control">
+                                <option value="auto" selected>Auto (System)</option>
+                                <option value="light">Light</option>
+                                <option value="dark">Dark</option>
+                                <option value="high-contrast">High Contrast</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="line-numbers" checked>
+                                <span class="checkbox-text">Show line numbers</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="word-wrap" checked>
+                                <span class="checkbox-text">Word wrap</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Report Generation Modal -->
+    <div id="report-modal" class="modal">
+        <div class="modal-content report-modal-content">
+            <div class="modal-header">
+                <h3>📊 Generate Advanced Report</h3>
+                <button class="modal-close" id="close-report-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="report-config">
+                    <div class="config-section">
+                        <h4>Report Format</h4>
+                        <div class="format-grid">
+                            <label class="format-option">
+                                <input type="radio" name="report-format" value="excel" checked>
+                                <div class="format-card">
+                                    <div class="format-icon">📊</div>
+                                    <div class="format-name">Excel (.xlsx)</div>
+                                    <div class="format-desc">Multi-sheet workbook with detailed analysis</div>
+                                </div>
+                            </label>
+                            <label class="format-option">
+                                <input type="radio" name="report-format" value="pdf">
+                                <div class="format-card">
+                                    <div class="format-icon">📄</div>
+                                    <div class="format-name">PDF (.pdf)</div>
+                                    <div class="format-desc">Professional report with visual formatting</div>
+                                </div>
+                            </label>
+                            <label class="format-option">
+                                <input type="radio" name="report-format" value="html">
+                                <div class="format-card">
+                                    <div class="format-icon">🌐</div>
+                                    <div class="format-name">HTML (.html)</div>
+                                    <div class="format-desc">Interactive web report with search and filters</div>
+                                </div>
+                            </label>
+                            <label class="format-option">
+                                <input type="radio" name="report-format" value="csv">
+                                <div class="format-card">
+                                    <div class="format-icon">📋</div>
+                                    <div class="format-name">CSV (.csv)</div>
+                                    <div class="format-desc">Flat file for data processing</div>
+                                </div>
+                            </label>
+                            <label class="format-option">
+                                <input type="radio" name="report-format" value="json">
+                                <div class="format-card">
+                                    <div class="format-icon">{ }</div>
+                                    <div class="format-name">JSON (.json)</div>
+                                    <div class="format-desc">Machine-readable diff output</div>
+                                </div>
+                            </label>
+                            <label class="format-option">
+                                <input type="radio" name="report-format" value="markdown">
+                                <div class="format-card">
+                                    <div class="format-icon">📝</div>
+                                    <div class="format-name">Markdown (.md)</div>
+                                    <div class="format-desc">Documentation-friendly format</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="config-section">
+                        <h4>Report Configuration</h4>
+                        <div class="config-grid">
+                            <div class="form-group">
+                                <label class="form-label">Report Title</label>
+                                <input type="text" id="report-title" class="form-control" value="JSON Comparison Report">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Group By</label>
+                                <select id="group-by" class="form-control">
+                                    <option value="change-type">Change Type</option>
+                                    <option value="json-path">JSON Path</option>
+                                    <option value="id">ID</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Color Scheme</label>
+                                <select id="color-scheme" class="form-control">
+                                    <option value="default">Default</option>
+                                    <option value="high-contrast">High Contrast</option>
+                                    <option value="colorblind-friendly">Colorblind Friendly</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="checkbox-grid">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="include-summary" checked>
+                                <span class="checkbox-text">Include Summary Statistics</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="include-detailed-diffs" checked>
+                                <span class="checkbox-text">Include Detailed Differences</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="include-side-by-side" checked>
+                                <span class="checkbox-text">Include Side-by-Side View</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="include-matched-items">
+                                <span class="checkbox-text">Include Matched Items</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="config-section">
+                        <div class="report-preview">
+                            <h4>Report Preview</h4>
+                            <div class="preview-stats">
+                                <div class="preview-item">Sections: <span id="preview-sections">4</span></div>
+                                <div class="preview-item">Est. Size: <span id="preview-size">~2.5MB</span></div>
+                                <div class="preview-item">Format: <span id="preview-format">Excel</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <div class="progress-container" id="report-progress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="report-progress-bar"></div>
+                        </div>
+                        <div class="progress-text" id="report-progress-text">Generating report...</div>
+                    </div>
+                    <button class="btn btn--primary btn--lg" id="generate-report-final">Generate Report</button>
+                    <button class="btn btn--outline" id="cancel-report">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📘 JSON Comparison Tool - Help Guide</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body help-content">
+                <div class="help-section">
+                    <h4>🚀 Quick Start Guide</h4>
+                    <ol>
+                        <li>Paste or upload your JSON data into the left and right panels</li>
+                        <li>Specify the ID field (e.g., "id" or "users[].userId")</li>
+                        <li>Click "Compare JSONs" to analyze differences</li>
+                        <li>Review results in different view modes</li>
+                        <li>Generate comprehensive reports in your preferred format</li>
+                    </ol>
+                </div>
+                
+                <div class="help-section">
+                    <h4>🎯 ID Key/Path Examples</h4>
+                    <div class="examples-grid">
+                        <div class="example-item">
+                            <code>id</code>
+                            <span>Simple ID field at root level</span>
+                        </div>
+                        <div class="example-item">
+                            <code>user.id</code>
+                            <span>Nested ID field</span>
+                        </div>
+                        <div class="example-item">
+                            <code>users[].id</code>
+                            <span>ID in array of objects</span>
+                        </div>
+                        <div class="example-item">
+                            <code>data.items[].userId</code>
+                            <span>Complex nested array path</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <h4>⌨️ Keyboard Shortcuts</h4>
+                    <div class="shortcuts-grid">
+                        <div class="shortcut-item">
+                            <kbd>Ctrl/Cmd + Enter</kbd>
+                            <span>Run Comparison</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>Ctrl/Cmd + K</kbd>
+                            <span>Clear All</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>Ctrl/Cmd + S</kbd>
+                            <span>Swap JSONs</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>Ctrl/Cmd + E</kbd>
+                            <span>Load Example</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>Ctrl/Cmd + R</kbd>
+                            <span>Generate Report</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>Alt + ↑/↓</kbd>
+                            <span>Navigate Differences</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <h4>📊 View Modes</h4>
+                    <div class="view-modes">
+                        <div class="mode-item">
+                            <strong>🌳 Tree View:</strong> Hierarchical JSON structure with expandable nodes
+                        </div>
+                        <div class="mode-item">
+                            <strong>📝 Line-by-Line:</strong> Synchronized diff with color-coded changes
+                        </div>
+                        <div class="mode-item">
+                            <strong>⚡ Split View:</strong> Two independent JSON editors with highlights
+                        </div>
+                        <div class="mode-item">
+                            <strong>📋 Unified:</strong> Single view with inline diff markers
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <h4>❓ FAQ</h4>
+                    <details>
+                        <summary>How do I compare large JSON files?</summary>
+                        <p>The tool supports files up to 10MB. For large files, use path filtering to focus on specific sections.</p>
+                    </details>
+                    <details>
+                        <summary>What report formats are available?</summary>
+                        <p>Excel, PDF, HTML, CSV, JSON, and Markdown formats with customizable content and styling.</p>
+                    </details>
+                    <details>
+                        <summary>Can I save my API configurations?</summary>
+                        <p>Yes, use the "Save Request" feature to store API configurations for reuse.</p>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loading" class="loading" style="display: none;">
+        <div class="spinner"></div>
+        <p>Processing comparison...</p>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
