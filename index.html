@@ -4,7 +4,1982 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON Comparison Tool</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+          /* Primitive Color Tokens */
+          --color-white: rgba(255, 255, 255, 1);
+          --color-black: rgba(0, 0, 0, 1);
+          --color-cream-50: rgba(252, 252, 249, 1);
+          --color-cream-100: rgba(255, 255, 253, 1);
+          --color-gray-200: rgba(245, 245, 245, 1);
+          --color-gray-300: rgba(167, 169, 169, 1);
+          --color-gray-400: rgba(119, 124, 124, 1);
+          --color-slate-500: rgba(98, 108, 113, 1);
+          --color-brown-600: rgba(94, 82, 64, 1);
+          --color-charcoal-700: rgba(31, 33, 33, 1);
+          --color-charcoal-800: rgba(38, 40, 40, 1);
+          --color-slate-900: rgba(19, 52, 59, 1);
+          --color-teal-300: rgba(50, 184, 198, 1);
+          --color-teal-400: rgba(45, 166, 178, 1);
+          --color-teal-500: rgba(33, 128, 141, 1);
+          --color-teal-600: rgba(29, 116, 128, 1);
+          --color-teal-700: rgba(26, 104, 115, 1);
+          --color-teal-800: rgba(41, 150, 161, 1);
+          --color-red-400: rgba(255, 84, 89, 1);
+          --color-red-500: rgba(192, 21, 47, 1);
+          --color-orange-400: rgba(230, 129, 97, 1);
+          --color-orange-500: rgba(168, 75, 47, 1);
+        
+          /* RGB versions for opacity control */
+          --color-brown-600-rgb: 94, 82, 64;
+          --color-teal-500-rgb: 33, 128, 141;
+          --color-slate-900-rgb: 19, 52, 59;
+          --color-slate-500-rgb: 98, 108, 113;
+          --color-red-500-rgb: 192, 21, 47;
+          --color-red-400-rgb: 255, 84, 89;
+          --color-orange-500-rgb: 168, 75, 47;
+          --color-orange-400-rgb: 230, 129, 97;
+        
+          /* Background color tokens (Light Mode) */
+          --color-bg-1: rgba(59, 130, 246, 0.08); /* Light blue */
+          --color-bg-2: rgba(245, 158, 11, 0.08); /* Light yellow */
+          --color-bg-3: rgba(34, 197, 94, 0.08); /* Light green */
+          --color-bg-4: rgba(239, 68, 68, 0.08); /* Light red */
+          --color-bg-5: rgba(147, 51, 234, 0.08); /* Light purple */
+          --color-bg-6: rgba(249, 115, 22, 0.08); /* Light orange */
+          --color-bg-7: rgba(236, 72, 153, 0.08); /* Light pink */
+          --color-bg-8: rgba(6, 182, 212, 0.08); /* Light cyan */
+        
+          /* Semantic Color Tokens (Light Mode) */
+          --color-background: var(--color-cream-50);
+          --color-surface: var(--color-cream-100);
+          --color-text: var(--color-slate-900);
+          --color-text-secondary: var(--color-slate-500);
+          --color-primary: var(--color-teal-500);
+          --color-primary-hover: var(--color-teal-600);
+          --color-primary-active: var(--color-teal-700);
+          --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+          --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+          --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
+          --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+          --color-btn-primary-text: var(--color-cream-50);
+          --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+          --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
+          --color-error: var(--color-red-500);
+          --color-success: var(--color-teal-500);
+          --color-warning: var(--color-orange-500);
+          --color-info: var(--color-slate-500);
+          --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+          --color-select-caret: rgba(var(--color-slate-900-rgb), 0.8);
+        
+          /* Common style patterns */
+          --focus-ring: 0 0 0 3px var(--color-focus-ring);
+          --focus-outline: 2px solid var(--color-primary);
+          --status-bg-opacity: 0.15;
+          --status-border-opacity: 0.25;
+          --select-caret-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23134252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+          --select-caret-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f5f5f5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        
+          /* RGB versions for opacity control */
+          --color-success-rgb: 33, 128, 141;
+          --color-error-rgb: 192, 21, 47;
+          --color-warning-rgb: 168, 75, 47;
+          --color-info-rgb: 98, 108, 113;
+        
+          /* Typography */
+          --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system,
+            BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          --font-family-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo,
+            Monaco, Consolas, monospace;
+          --font-size-xs: 11px;
+          --font-size-sm: 12px;
+          --font-size-base: 14px;
+          --font-size-md: 14px;
+          --font-size-lg: 16px;
+          --font-size-xl: 18px;
+          --font-size-2xl: 20px;
+          --font-size-3xl: 24px;
+          --font-size-4xl: 30px;
+          --font-weight-normal: 400;
+          --font-weight-medium: 500;
+          --font-weight-semibold: 550;
+          --font-weight-bold: 600;
+          --line-height-tight: 1.2;
+          --line-height-normal: 1.5;
+          --letter-spacing-tight: -0.01em;
+        
+          /* Spacing */
+          --space-0: 0;
+          --space-1: 1px;
+          --space-2: 2px;
+          --space-4: 4px;
+          --space-6: 6px;
+          --space-8: 8px;
+          --space-10: 10px;
+          --space-12: 12px;
+          --space-16: 16px;
+          --space-20: 20px;
+          --space-24: 24px;
+          --space-32: 32px;
+        
+          /* Border Radius */
+          --radius-sm: 6px;
+          --radius-base: 8px;
+          --radius-md: 10px;
+          --radius-lg: 12px;
+          --radius-full: 9999px;
+        
+          /* Shadows */
+          --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
+          --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+          --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04),
+            0 2px 4px -1px rgba(0, 0, 0, 0.02);
+          --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04),
+            0 4px 6px -2px rgba(0, 0, 0, 0.02);
+          --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.15),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+        
+          /* Animation */
+          --duration-fast: 150ms;
+          --duration-normal: 250ms;
+          --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+        
+          /* Layout */
+          --container-sm: 640px;
+          --container-md: 768px;
+          --container-lg: 1024px;
+          --container-xl: 1280px;
+
+          /* Custom diff colors */
+          --diff-added: #22c55e;
+          --diff-deleted: #ef4444;
+          --diff-modified: #f59e0b;
+          --diff-equal: #3b82f6;
+          --diff-added-bg: rgba(34, 197, 94, 0.1);
+          --diff-deleted-bg: rgba(239, 68, 68, 0.1);
+          --diff-modified-bg: rgba(245, 158, 11, 0.1);
+          --diff-equal-bg: rgba(59, 130, 246, 0.1);
+          
+          /* Border RGB values for scrollbars */
+          --color-border-rgb: 94, 82, 64;
+        }
+        
+        /* Dark mode colors */
+        @media (prefers-color-scheme: dark) {
+          :root {
+            --color-gray-400-rgb: 119, 124, 124;
+            --color-teal-300-rgb: 50, 184, 198;
+            --color-gray-300-rgb: 167, 169, 169;
+            --color-gray-200-rgb: 245, 245, 245;
+        
+            --color-bg-1: rgba(29, 78, 216, 0.15); /* Dark blue */
+            --color-bg-2: rgba(180, 83, 9, 0.15); /* Dark yellow */
+            --color-bg-3: rgba(21, 128, 61, 0.15); /* Dark green */
+            --color-bg-4: rgba(185, 28, 28, 0.15); /* Dark red */
+            --color-bg-5: rgba(107, 33, 168, 0.15); /* Dark purple */
+            --color-bg-6: rgba(194, 65, 12, 0.15); /* Dark orange */
+            --color-bg-7: rgba(190, 24, 93, 0.15); /* Dark pink */
+            --color-bg-8: rgba(8, 145, 178, 0.15); /* Dark cyan */
+        
+            --color-background: var(--color-charcoal-700);
+            --color-surface: var(--color-charcoal-800);
+            --color-text: var(--color-gray-200);
+            --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+            --color-primary: var(--color-teal-300);
+            --color-primary-hover: var(--color-teal-400);
+            --color-primary-active: var(--color-teal-800);
+            --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+            --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+            --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
+            --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+            --color-error: var(--color-red-400);
+            --color-success: var(--color-teal-300);
+            --color-warning: var(--color-orange-400);
+            --color-info: var(--color-gray-300);
+            --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+            --color-btn-primary-text: var(--color-slate-900);
+            --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+            --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
+            --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1),
+              inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+            --button-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
+            --color-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
+            --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
+        
+            --color-success-rgb: var(--color-teal-300-rgb);
+            --color-error-rgb: var(--color-red-400-rgb);
+            --color-warning-rgb: var(--color-orange-400-rgb);
+            --color-info-rgb: var(--color-gray-300-rgb);
+          }
+        }
+        
+        /* Data attribute for manual theme switching */
+        [data-color-scheme="dark"] {
+          --color-gray-400-rgb: 119, 124, 124;
+          --color-teal-300-rgb: 50, 184, 198;
+          --color-gray-300-rgb: 167, 169, 169;
+          --color-gray-200-rgb: 245, 245, 245;
+          --color-border-rgb: 119, 124, 124;
+        
+          --color-bg-1: rgba(29, 78, 216, 0.15);
+          --color-bg-2: rgba(180, 83, 9, 0.15);
+          --color-bg-3: rgba(21, 128, 61, 0.15);
+          --color-bg-4: rgba(185, 28, 28, 0.15);
+          --color-bg-5: rgba(107, 33, 168, 0.15);
+          --color-bg-6: rgba(194, 65, 12, 0.15);
+          --color-bg-7: rgba(190, 24, 93, 0.15);
+          --color-bg-8: rgba(8, 145, 178, 0.15);
+        
+          --color-background: var(--color-charcoal-700);
+          --color-surface: var(--color-charcoal-800);
+          --color-text: var(--color-gray-200);
+          --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+          --color-primary: var(--color-teal-300);
+          --color-primary-hover: var(--color-teal-400);
+          --color-primary-active: var(--color-teal-800);
+          --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+          --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+          --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
+          --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+          --color-error: var(--color-red-400);
+          --color-success: var(--color-teal-300);
+          --color-warning: var(--color-orange-400);
+          --color-info: var(--color-gray-300);
+          --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+          --color-btn-primary-text: var(--color-slate-900);
+          --color-card-border: rgba(var(--color-gray-400-rgb), 0.15);
+          --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
+          --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+          --color-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
+          --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
+        
+          --color-success-rgb: var(--color-teal-300-rgb);
+          --color-error-rgb: var(--color-red-400-rgb);
+          --color-warning-rgb: var(--color-orange-400-rgb);
+          --color-info-rgb: var(--color-gray-300-rgb);
+        }
+        
+        [data-color-scheme="light"] {
+          --color-brown-600-rgb: 94, 82, 64;
+          --color-teal-500-rgb: 33, 128, 141;
+          --color-slate-900-rgb: 19, 52, 59;
+        
+          --color-background: var(--color-cream-50);
+          --color-surface: var(--color-cream-100);
+          --color-text: var(--color-slate-900);
+          --color-text-secondary: var(--color-slate-500);
+          --color-primary: var(--color-teal-500);
+          --color-primary-hover: var(--color-teal-600);
+          --color-primary-active: var(--color-teal-700);
+          --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+          --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+          --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
+          --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+          --color-btn-primary-text: var(--color-cream-50);
+          --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+          --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
+          --color-error: var(--color-red-500);
+          --color-success: var(--color-teal-500);
+          --color-warning: var(--color-orange-500);
+          --color-info: var(--color-slate-500);
+          --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+        
+          --color-success-rgb: var(--color-teal-500-rgb);
+          --color-error-rgb: var(--color-red-500-rgb);
+          --color-warning-rgb: var(--color-orange-500-rgb);
+          --color-info-rgb: var(--color-slate-500-rgb);
+        }
+        
+        /* Base styles */
+        html {
+          font-size: var(--font-size-base);
+          font-family: var(--font-family-base);
+          line-height: var(--line-height-normal);
+          color: var(--color-text);
+          background-color: var(--color-background);
+          -webkit-font-smoothing: antialiased;
+          box-sizing: border-box;
+        }
+        
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        
+        *,
+        *::before,
+        *::after {
+          box-sizing: inherit;
+        }
+        
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+          margin: 0;
+          font-weight: var(--font-weight-semibold);
+          line-height: var(--line-height-tight);
+          color: var(--color-text);
+          letter-spacing: var(--letter-spacing-tight);
+        }
+        
+        h1 { font-size: var(--font-size-4xl); }
+        h2 { font-size: var(--font-size-3xl); }
+        h3 { font-size: var(--font-size-2xl); }
+        h4 { font-size: var(--font-size-xl); }
+        h5 { font-size: var(--font-size-lg); }
+        h6 { font-size: var(--font-size-md); }
+        p { margin: 0 0 var(--space-16) 0; }
+        
+        a {
+          color: var(--color-primary);
+          text-decoration: none;
+          transition: color var(--duration-fast) var(--ease-standard);
+        }
+        
+        a:hover {
+          color: var(--color-primary-hover);
+        }
+        
+        /* Buttons */
+        .btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: var(--space-8) var(--space-16);
+          border-radius: var(--radius-base);
+          font-size: var(--font-size-base);
+          font-weight: 500;
+          line-height: 1.5;
+          cursor: pointer;
+          transition: all var(--duration-normal) var(--ease-standard);
+          border: none;
+          text-decoration: none;
+          position: relative;
+        }
+        
+        .btn:focus-visible {
+          outline: none;
+          box-shadow: var(--focus-ring);
+        }
+        
+        .btn--primary {
+          background: var(--color-primary);
+          color: var(--color-btn-primary-text);
+        }
+        
+        .btn--primary:hover {
+          background: var(--color-primary-hover);
+        }
+        
+        .btn--primary:active {
+          background: var(--color-primary-active);
+        }
+        
+        .btn--secondary {
+          background: var(--color-secondary);
+          color: var(--color-text);
+        }
+        
+        .btn--secondary:hover {
+          background: var(--color-secondary-hover);
+        }
+        
+        .btn--secondary:active {
+          background: var(--color-secondary-active);
+        }
+        
+        .btn--outline {
+          background: transparent;
+          border: 1px solid var(--color-border);
+          color: var(--color-text);
+        }
+        
+        .btn--outline:hover {
+          background: var(--color-secondary);
+        }
+        
+        .btn--sm {
+          padding: var(--space-4) var(--space-12);
+          font-size: var(--font-size-sm);
+          border-radius: var(--radius-sm);
+        }
+        
+        .btn--lg {
+          padding: var(--space-10) var(--space-20);
+          font-size: var(--font-size-lg);
+          border-radius: var(--radius-md);
+        }
+        
+        .btn--full-width {
+          width: 100%;
+        }
+        
+        .btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+        
+        /* Form elements */
+        .form-control {
+          display: block;
+          width: 100%;
+          padding: var(--space-8) var(--space-12);
+          font-size: var(--font-size-md);
+          line-height: 1.5;
+          color: var(--color-text);
+          background-color: var(--color-surface);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-base);
+          transition: border-color var(--duration-fast) var(--ease-standard),
+            box-shadow var(--duration-fast) var(--ease-standard);
+        }
+        
+        textarea.form-control {
+          font-family: var(--font-family-mono);
+          font-size: var(--font-size-sm);
+          resize: vertical;
+        }
+        
+        select.form-control {
+          padding: var(--space-8) var(--space-12);
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+          background-image: var(--select-caret-light);
+          background-repeat: no-repeat;
+          background-position: right var(--space-12) center;
+          background-size: 16px;
+          padding-right: var(--space-32);
+        }
+        
+        @media (prefers-color-scheme: dark) {
+          select.form-control {
+            background-image: var(--select-caret-dark);
+          }
+        }
+        
+        [data-color-scheme="dark"] select.form-control {
+          background-image: var(--select-caret-dark);
+        }
+        
+        [data-color-scheme="light"] select.form-control {
+          background-image: var(--select-caret-light);
+        }
+        
+        .form-control:focus {
+          border-color: var(--color-primary);
+          outline: var(--focus-outline);
+        }
+        
+        .form-label {
+          display: block;
+          margin-bottom: var(--space-8);
+          font-weight: var(--font-weight-medium);
+          font-size: var(--font-size-sm);
+        }
+        
+        .form-group {
+          margin-bottom: var(--space-16);
+        }
+        
+        /* Container layout */
+        .container {
+          width: 100%;
+          margin-right: auto;
+          margin-left: auto;
+          padding-right: var(--space-16);
+          padding-left: var(--space-16);
+          max-width: var(--container-xl);
+        }
+        
+        /* Header styles */
+        .header {
+          background: var(--color-surface);
+          border-bottom: 1px solid var(--color-border);
+          padding: var(--space-16) 0;
+        }
+        
+        .header-controls {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: var(--space-20);
+          padding: var(--space-12) 0;
+          border-bottom: 1px solid var(--color-border);
+        }
+        
+        .view-mode-toggle {
+          display: flex;
+          gap: var(--space-4);
+          background: var(--color-bg-1);
+          padding: var(--space-4);
+          border-radius: var(--radius-lg);
+        }
+        
+        .view-toggle-btn {
+          display: flex;
+          align-items: center;
+          gap: var(--space-6);
+          padding: var(--space-8) var(--space-16);
+          background: transparent;
+          border: none;
+          border-radius: var(--radius-base);
+          color: var(--color-text-secondary);
+          font-weight: var(--font-weight-medium);
+          cursor: pointer;
+          transition: all var(--duration-fast) var(--ease-standard);
+          font-size: var(--font-size-sm);
+        }
+        
+        .view-toggle-btn:hover {
+          background: var(--color-secondary);
+          color: var(--color-text);
+        }
+        
+        .view-toggle-btn.active {
+          background: var(--color-primary);
+          color: var(--color-btn-primary-text);
+          box-shadow: var(--shadow-sm);
+        }
+        
+        .view-toggle-btn .icon {
+          font-size: var(--font-size-base);
+        }
+        
+        .header-actions {
+          display: flex;
+          gap: var(--space-8);
+        }
+        
+        .header-content {
+          text-align: center;
+          margin-bottom: var(--space-24);
+        }
+        
+        .app-title {
+          font-size: var(--font-size-4xl);
+          font-weight: var(--font-weight-bold);
+          margin-bottom: var(--space-8);
+        }
+        
+        .app-tagline {
+          color: var(--color-text-secondary);
+          font-size: var(--font-size-lg);
+          margin: 0;
+        }
+        
+        /* Navigation tabs */
+        .nav-tabs {
+          display: flex;
+          justify-content: center;
+          gap: var(--space-8);
+        }
+        
+        .nav-tab {
+          padding: var(--space-12) var(--space-24);
+          background: transparent;
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-base);
+          color: var(--color-text-secondary);
+          cursor: pointer;
+          transition: all var(--duration-fast) var(--ease-standard);
+          font-weight: var(--font-weight-medium);
+        }
+        
+        .nav-tab:hover {
+          background: var(--color-secondary);
+          color: var(--color-text);
+        }
+        
+        .nav-tab.active {
+          background: var(--color-primary);
+          color: var(--color-btn-primary-text);
+          border-color: var(--color-primary);
+        }
+        
+        /* Main content */
+        .main-content {
+          padding: var(--space-32) 0;
+        }
+        
+        /* Views */
+        .view {
+          display: none;
+        }
+        
+        .view.active {
+          display: block;
+        }
+        
+        /* JSON Panels */
+        .json-panels {
+          display: grid;
+          grid-template-columns: 1fr auto 1fr;
+          gap: var(--space-24);
+          margin-bottom: var(--space-32);
+        }
+        
+        .json-panel {
+          background: var(--color-surface);
+          border: 1px solid var(--color-card-border);
+          border-radius: var(--radius-lg);
+          overflow: hidden;
+        }
+        
+        .panel-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: var(--space-16);
+          background: var(--color-bg-1);
+          border-bottom: 1px solid var(--color-card-border);
+        }
+        
+        .panel-title {
+          font-size: var(--font-size-xl);
+          font-weight: var(--font-weight-semibold);
+          margin: 0;
+        }
+        
+        .panel-controls {
+          display: flex;
+          gap: var(--space-8);
+        }
+        
+        .json-input-container {
+          position: relative;
+        }
+        
+        .json-input {
+          width: 100%;
+          height: 400px;
+          padding: var(--space-16);
+          border: none;
+          background: var(--color-surface);
+          color: var(--color-text);
+          font-family: var(--font-family-mono);
+          font-size: var(--font-size-sm);
+          line-height: 1.6;
+          resize: none;
+          outline: none;
+        }
+        
+        .input-info {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: var(--space-8) var(--space-16);
+          background: var(--color-bg-2);
+          border-top: 1px solid var(--color-card-border);
+          font-size: var(--font-size-xs);
+          color: var(--color-text-secondary);
+        }
+        
+        .validation-status {
+          font-weight: var(--font-weight-medium);
+        }
+        
+        .validation-status.valid {
+          color: var(--color-success);
+        }
+        
+        .validation-status.invalid {
+          color: var(--color-error);
+        }
+        
+        /* Center Controls */
+        .center-controls {
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-16);
+          min-width: 320px;
+          max-width: 400px;
+          padding: var(--space-20);
+          background: var(--color-surface);
+          border: 1px solid var(--color-card-border);
+          border-radius: var(--radius-lg);
+          height: fit-content;
+          box-shadow: var(--shadow-sm);
+        }
+        
+        /* Advanced Settings */
+        .advanced-settings {
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-base);
+          margin: var(--space-8) 0;
+        }
+        
+        .settings-toggle {
+          padding: var(--space-12);
+          background: var(--color-bg-2);
+          border: none;
+          border-radius: var(--radius-base);
+          cursor: pointer;
+          font-weight: var(--font-weight-medium);
+          color: var(--color-text);
+          display: flex;
+          align-items: center;
+          gap: var(--space-8);
+          width: 100%;
+        }
+        
+        .settings-toggle:hover {
+          background: var(--color-secondary);
+        }
+        
+        .settings-toggle::before {
+          content: '▶';
+          transition: transform var(--duration-fast);
+        }
+        
+        .advanced-settings[open] .settings-toggle::before {
+          transform: rotate(90deg);
+        }
+        
+        .settings-content {
+          padding: var(--space-16);
+          border-top: 1px solid var(--color-border);
+        }
+        
+        /* Statistics Panel */
+        .stats-panel {
+          background: var(--color-bg-3);
+          border: 1px solid var(--color-card-border);
+          border-radius: var(--radius-base);
+          padding: var(--space-16);
+          margin: var(--space-16) 0;
+        }
+        
+        .stats-panel h4 {
+          margin: 0 0 var(--space-12) 0;
+          font-size: var(--font-size-lg);
+          color: var(--color-text);
+        }
+        
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: var(--space-8);
+          margin-bottom: var(--space-12);
+        }
+        
+        .stats-grid .stat-item {
+          text-align: center;
+          padding: var(--space-8);
+          border-radius: var(--radius-sm);
+          background: var(--color-surface);
+          border: 1px solid var(--color-border);
+        }
+        
+        .stats-grid .stat-item.stat-added {
+          border-color: var(--diff-added);
+          background: var(--diff-added-bg);
+        }
+        
+        .stats-grid .stat-item.stat-deleted {
+          border-color: var(--diff-deleted);
+          background: var(--diff-deleted-bg);
+        }
+        
+        .stats-grid .stat-item.stat-modified {
+          border-color: var(--diff-modified);
+          background: var(--diff-modified-bg);
+        }
+        
+        .stats-grid .stat-number {
+          display: block;
+          font-size: var(--font-size-xl);
+          font-weight: var(--font-weight-bold);
+          margin-bottom: var(--space-2);
+        }
+        
+        .stats-grid .stat-label {
+          font-size: var(--font-size-xs);
+          color: var(--color-text-secondary);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+        
+        .progress-bar {
+          width: 100%;
+          height: var(--space-8);
+          background: var(--color-secondary);
+          border-radius: var(--radius-full);
+          overflow: hidden;
+          margin-bottom: var(--space-8);
+        }
+        
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, var(--color-success), var(--color-primary));
+          border-radius: var(--radius-full);
+          transition: width var(--duration-normal) var(--ease-standard);
+          width: 0%;
+        }
+        
+        .progress-text {
+          text-align: center;
+          font-size: var(--font-size-sm);
+          font-weight: var(--font-weight-medium);
+          color: var(--color-text-secondary);
+        }
+        
+        .control-group {
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .checkbox-group {
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-8);
+        }
+        
+        .checkbox-label {
+          display: flex;
+          align-items: center;
+          gap: var(--space-8);
+          cursor: pointer;
+          font-size: var(--font-size-sm);
+        }
+        
+        .checkbox-label input[type="checkbox"] {
+          margin: 0;
+        }
+        
+        .action-buttons {
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-8);
+        }
+        
+        /* Results Panel */
+        .results-panel {
+          background: var(--color-surface);
+          border: 1px solid var(--color-card-border);
+          border-radius: var(--radius-lg);
+          overflow: hidden;
+          box-shadow: var(--shadow-lg);
+        }
+        
+        .results-title {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex: 1;
+        }
+        
+        .diff-navigation {
+          display: flex;
+          align-items: center;
+          gap: var(--space-8);
+        }
+        
+        #diff-counter {
+          font-size: var(--font-size-sm);
+          color: var(--color-text-secondary);
+          padding: 0 var(--space-8);
+        }
+        
+        .filter-controls {
+          display: flex;
+          gap: var(--space-4);
+          margin-right: var(--space-8);
+        }
+        
+        .filter-btn {
+          padding: var(--space-4) var(--space-8);
+          background: transparent;
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-sm);
+          font-size: var(--font-size-xs);
+          cursor: pointer;
+          transition: all var(--duration-fast);
+          color: var(--color-text-secondary);
+        }
+        
+        .filter-btn:hover {
+          background: var(--color-secondary);
+          color: var(--color-text);
+        }
+        
+        .filter-btn.active {
+          background: var(--color-primary);
+          color: var(--color-btn-primary-text);
+          border-color: var(--color-primary);
+        }
+        
+        .search-input {
+          width: 200px;
+          padding: var(--space-4) var(--space-8);
+          font-size: var(--font-size-sm);
+          border-radius: var(--radius-sm);
+        }
+        
+        /* Line-by-Line Comparison */
+        .line-by-line-container {
+          display: flex;
+          flex-direction: column;
+          height: 600px;
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-base);
+          overflow: hidden;
+        }
+        
+        .line-header {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          background: var(--color-bg-1);
+          border-bottom: 2px solid var(--color-border);
+        }
+        
+        .line-title {
+          padding: var(--space-12) var(--space-16);
+          font-weight: var(--font-weight-semibold);
+          text-align: center;
+          border-right: 1px solid var(--color-border);
+        }
+        
+        .line-title:last-child {
+          border-right: none;
+        }
+        
+        .line-content {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          flex: 1;
+          overflow: hidden;
+        }
+        
+        .line-panel {
+          overflow: auto;
+          font-family: var(--font-family-mono);
+          font-size: var(--font-size-sm);
+          line-height: 1.4;
+          padding: 0;
+          border-right: 1px solid var(--color-border);
+          position: relative;
+        }
+        
+        .line-panel:last-child {
+          border-right: none;
+        }
+        
+        .line-item {
+          display: flex;
+          min-height: 24px;
+          border-bottom: 1px solid rgba(var(--color-border-rgb), 0.1);
+        }
+        
+        .line-number {
+          width: 40px;
+          padding: var(--space-2) var(--space-4);
+          background: var(--color-bg-2);
+          border-right: 1px solid var(--color-border);
+          text-align: right;
+          font-size: var(--font-size-xs);
+          color: var(--color-text-secondary);
+          user-select: none;
+        }
+        
+        .line-code {
+          flex: 1;
+          padding: var(--space-2) var(--space-8);
+          white-space: pre-wrap;
+          word-break: break-word;
+        }
+        
+        .line-item.added {
+          background: var(--diff-added-bg);
+        }
+        
+        .line-item.deleted {
+          background: var(--diff-deleted-bg);
+        }
+        
+        .line-item.modified {
+          background: var(--diff-modified-bg);
+        }
+        
+        .line-item.equal {
+          background: transparent;
+        }
+
+        .line-code .char-added {
+            background-color: rgba(45, 212, 191, 0.3);
+        }
+        .line-code .char-deleted {
+            background-color: rgba(251, 113, 133, 0.3);
+            text-decoration: line-through;
+        }
+        
+        .line-item.context {
+          background: var(--color-bg-8);
+          color: var(--color-text-secondary);
+          justify-content: center;
+          font-weight: bold;
+        }
+        
+        .empty-line {
+          background: var(--color-bg-4);
+          opacity: 0.3;
+        }
+        
+        .results-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: var(--space-16);
+          background: var(--color-bg-3);
+          border-bottom: 1px solid var(--color-card-border);
+        }
+        
+        .results-controls {
+          display: flex;
+          gap: var(--space-8);
+        }
+        
+        .results-tabs {
+          display: flex;
+          border-bottom: 1px solid var(--color-card-border);
+        }
+        
+        .results-tab {
+          padding: var(--space-12) var(--space-20);
+          background: transparent;
+          border: none;
+          color: var(--color-text-secondary);
+          cursor: pointer;
+          transition: all var(--duration-fast) var(--ease-standard);
+          font-weight: var(--font-weight-medium);
+          border-bottom: 2px solid transparent;
+        }
+        
+        .results-tab:hover {
+          color: var(--color-text);
+          background: var(--color-secondary);
+        }
+        
+        .results-tab.active {
+          color: var(--color-primary);
+          border-bottom-color: var(--color-primary);
+          background: var(--color-surface);
+        }
+        
+        .results-content {
+          padding: var(--space-16);
+        }
+        
+        .tab-content {
+          display: none;
+        }
+        
+        .tab-content.active {
+          display: block;
+        }
+        
+        /* API Panels */
+        .api-panels {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: var(--space-24);
+          margin-bottom: var(--space-24);
+        }
+        
+        .api-panel {
+          background: var(--color-surface);
+          border: 1px solid var(--color-card-border);
+          border-radius: var(--radius-lg);
+          padding: var(--space-20);
+        }
+        
+        .api-config {
+          margin-bottom: var(--space-20);
+        }
+        
+        .headers-container {
+          margin-bottom: var(--space-8);
+        }
+        
+        .header-row {
+          display: flex;
+          gap: var(--space-8);
+          margin-bottom: var(--space-8);
+          align-items: center;
+        }
+        
+        .header-key,
+        .header-value {
+          flex: 1;
+        }
+        
+        .remove-header {
+          width: 32px;
+          height: 32px;
+          border-radius: var(--radius-base);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: var(--color-error);
+          color: white;
+          border: none;
+          cursor: pointer;
+        }
+        
+        .api-response {
+          margin-top: var(--space-20);
+          padding-top: var(--space-20);
+          border-top: 1px solid var(--color-card-border);
+        }
+        
+        .response-meta {
+          margin-bottom: var(--space-12);
+          font-size: var(--font-size-sm);
+          color: var(--color-text-secondary);
+        }
+        
+        .response-body {
+          background: var(--color-bg-8);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-base);
+          padding: var(--space-12);
+          font-family: var(--font-family-mono);
+          font-size: var(--font-size-xs);
+          max-height: 200px;
+          overflow-y: auto;
+          margin-bottom: var(--space-12);
+        }
+        
+        .api-comparison {
+          text-align: center;
+        }
+        
+        /* Settings panels */
+        .settings-panels {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: var(--space-24);
+        }
+        
+        .settings-panel {
+          background: var(--color-surface);
+          border: 1px solid var(--color-card-border);
+          border-radius: var(--radius-lg);
+          padding: var(--space-20);
+        }
+        
+        .range-input {
+          width: 100%;
+          margin-bottom: var(--space-8);
+        }
+        
+        /* Diff display */
+        .diff-item {
+          padding: var(--space-8) var(--space-12);
+          margin-bottom: var(--space-4);
+          border-radius: var(--radius-base);
+          border-left: 4px solid;
+          font-family: var(--font-family-mono);
+          font-size: var(--font-size-sm);
+        }
+        
+        .diff-item--added {
+          background: var(--diff-added-bg);
+          border-color: var(--diff-added);
+        }
+        
+        .diff-item--deleted {
+          background: var(--diff-deleted-bg);
+          border-color: var(--diff-deleted);
+        }
+        
+        .diff-item--modified {
+          background: var(--diff-modified-bg);
+          border-color: var(--diff-modified);
+        }
+        
+        .diff-item--equal {
+          background: var(--diff-equal-bg);
+          border-color: var(--diff-equal);
+        }
+        
+        .diff-path {
+          font-weight: var(--font-weight-semibold);
+          color: var(--color-text);
+          margin-bottom: var(--space-4);
+        }
+        
+        .diff-value {
+          margin-left: var(--space-16);
+        }
+        
+        .diff-old {
+          color: var(--diff-deleted);
+          text-decoration: line-through;
+        }
+        
+        .diff-new {
+          color: var(--diff-added);
+        }
+        
+        /* Summary stats */
+        .summary-stats {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          gap: var(--space-16);
+        }
+        
+        .stat-item {
+          text-align: center;
+          padding: var(--space-16);
+          background: var(--color-bg-1);
+          border-radius: var(--radius-base);
+          border: 1px solid var(--color-card-border);
+        }
+        
+        .stat-number {
+          font-size: var(--font-size-3xl);
+          font-weight: var(--font-weight-bold);
+          margin-bottom: var(--space-4);
+        }
+        
+        .stat-label {
+          font-size: var(--font-size-sm);
+          color: var(--color-text-secondary);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+        
+        /* Side by side view */
+        .side-by-side {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: var(--space-16);
+        }
+        
+        .side-panel {
+          background: var(--color-bg-8);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-base);
+          padding: var(--space-12);
+        }
+        
+        .side-title {
+          font-weight: var(--font-weight-semibold);
+          margin-bottom: var(--space-8);
+          padding-bottom: var(--space-8);
+          border-bottom: 1px solid var(--color-border);
+        }
+        
+        .side-content {
+          font-family: var(--font-family-mono);
+          font-size: var(--font-size-xs);
+          line-height: 1.6;
+        }
+        
+        /* Report Generation Modal */
+        .report-modal-content {
+          max-width: 800px;
+          width: 95%;
+          max-height: 90vh;
+        }
+        
+        .report-config {
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-24);
+        }
+        
+        .config-section {
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-base);
+          padding: var(--space-16);
+        }
+        
+        .config-section h4 {
+          margin: 0 0 var(--space-16) 0;
+          color: var(--color-primary);
+          font-size: var(--font-size-lg);
+        }
+        
+        .format-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+          gap: var(--space-12);
+        }
+        
+        .format-option {
+          cursor: pointer;
+        }
+        
+        .format-option input[type="radio"] {
+          display: none;
+        }
+        
+        .format-card {
+          padding: var(--space-16);
+          border: 2px solid var(--color-border);
+          border-radius: var(--radius-base);
+          text-align: center;
+          transition: all var(--duration-fast);
+          background: var(--color-surface);
+          height: 120px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+        
+        .format-card:hover {
+          border-color: var(--color-primary);
+          box-shadow: var(--shadow-sm);
+        }
+        
+        .format-option input[type="radio"]:checked + .format-card {
+          border-color: var(--color-primary);
+          background: var(--color-bg-1);
+          box-shadow: var(--shadow-md);
+        }
+        
+        .format-icon {
+          font-size: var(--font-size-3xl);
+          margin-bottom: var(--space-8);
+        }
+        
+        .format-name {
+          font-weight: var(--font-weight-semibold);
+          margin-bottom: var(--space-4);
+          color: var(--color-text);
+        }
+        
+        .format-desc {
+          font-size: var(--font-size-xs);
+          color: var(--color-text-secondary);
+          line-height: 1.3;
+        }
+        
+        .config-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: var(--space-16);
+          margin-bottom: var(--space-16);
+        }
+        
+        .checkbox-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: var(--space-8);
+        }
+        
+        .report-preview {
+          background: var(--color-bg-5);
+          border-radius: var(--radius-base);
+          padding: var(--space-16);
+        }
+        
+        .preview-stats {
+          display: flex;
+          gap: var(--space-16);
+          flex-wrap: wrap;
+        }
+        
+        .preview-item {
+          font-size: var(--font-size-sm);
+          color: var(--color-text-secondary);
+        }
+        
+        .preview-item span {
+          font-weight: var(--font-weight-medium);
+          color: var(--color-text);
+        }
+        
+        .progress-container {
+          margin-bottom: var(--space-16);
+        }
+        
+        .modal-actions {
+          display: flex;
+          gap: var(--space-12);
+          justify-content: flex-end;
+          padding-top: var(--space-20);
+          border-top: 1px solid var(--color-border);
+          margin-top: var(--space-20);
+        }
+        
+        /* Modal */
+        .modal {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.6);
+          z-index: 1000;
+          backdrop-filter: blur(4px);
+        }
+        
+        .modal.show {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .modal-content {
+          background: var(--color-surface);
+          border-radius: var(--radius-lg);
+          box-shadow: var(--shadow-lg);
+          max-width: 600px;
+          width: 90%;
+          max-height: 80vh;
+          overflow-y: auto;
+        }
+        
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: var(--space-20);
+          border-bottom: 1px solid var(--color-border);
+        }
+        
+        .modal-close {
+          background: none;
+          border: none;
+          font-size: var(--font-size-2xl);
+          cursor: pointer;
+          color: var(--color-text-secondary);
+          padding: 0;
+          width: 32px;
+          height: 32px;
+          border-radius: var(--radius-base);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .modal-close:hover {
+          background: var(--color-secondary);
+          color: var(--color-text);
+        }
+        
+        .modal-body {
+          padding: var(--space-20);
+        }
+        
+        .modal-body h4 {
+          margin-top: var(--space-20);
+          margin-bottom: var(--space-8);
+          color: var(--color-primary);
+        }
+        
+        .modal-body h4:first-child {
+          margin-top: 0;
+        }
+        
+        .modal-body ul {
+          margin: 0 0 var(--space-16) 0;
+          padding-left: var(--space-20);
+        }
+        
+        .modal-body code {
+          background: var(--color-secondary);
+          padding: var(--space-2) var(--space-4);
+          border-radius: var(--radius-sm);
+          font-family: var(--font-family-mono);
+        }
+        
+        /* Enhanced Help Modal */
+        .help-content {
+          max-height: 70vh;
+          overflow-y: auto;
+        }
+        
+        .help-section {
+          margin-bottom: var(--space-24);
+          padding: var(--space-16);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-base);
+          background: var(--color-bg-1);
+        }
+        
+        .help-section h4 {
+          margin-top: 0;
+          color: var(--color-primary);
+          display: flex;
+          align-items: center;
+          gap: var(--space-8);
+        }
+        
+        .examples-grid {
+          display: grid;
+          gap: var(--space-8);
+        }
+        
+        .example-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: var(--space-8) var(--space-12);
+          background: var(--color-surface);
+          border-radius: var(--radius-sm);
+          border: 1px solid var(--color-border);
+        }
+        
+        .example-item code {
+          background: var(--color-bg-2);
+          padding: var(--space-2) var(--space-6);
+          border-radius: var(--radius-sm);
+          font-weight: var(--font-weight-medium);
+        }
+        
+        .example-item span {
+          color: var(--color-text-secondary);
+          font-size: var(--font-size-sm);
+        }
+        
+        .shortcuts-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: var(--space-8);
+        }
+        
+        .shortcut-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: var(--space-8) var(--space-12);
+          background: var(--color-surface);
+          border-radius: var(--radius-sm);
+          border: 1px solid var(--color-border);
+        }
+        
+        .view-modes {
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-8);
+        }
+        
+        .mode-item {
+          padding: var(--space-8) var(--space-12);
+          background: var(--color-surface);
+          border-radius: var(--radius-sm);
+          border: 1px solid var(--color-border);
+        }
+        
+        .help-section details {
+          margin: var(--space-8) 0;
+        }
+        
+        .help-section summary {
+          font-weight: var(--font-weight-medium);
+          cursor: pointer;
+          padding: var(--space-8);
+          background: var(--color-secondary);
+          border-radius: var(--radius-sm);
+          margin-bottom: var(--space-8);
+        }
+        
+        .help-section details[open] summary {
+          margin-bottom: var(--space-8);
+        }
+        
+        .help-section details p {
+          margin: 0;
+          padding-left: var(--space-16);
+          color: var(--color-text-secondary);
+        }
+        
+        .modal-body kbd {
+          background: var(--color-text);
+          color: var(--color-surface);
+          padding: var(--space-2) var(--space-6);
+          border-radius: var(--radius-sm);
+          font-family: var(--font-family-mono);
+          font-size: var(--font-size-xs);
+          border: 1px solid var(--color-border);
+        }
+        
+        /* Loading indicator */
+        .loading {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          z-index: 2000;
+          color: white;
+        }
+        
+        .spinner {
+          width: 40px;
+          height: 40px;
+          border: 4px solid rgba(255, 255, 255, 0.3);
+          border-top: 4px solid white;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin-bottom: var(--space-16);
+        }
+        
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        
+        /* Additional Diff Styles */
+        .diff-item {
+          position: relative;
+          cursor: pointer;
+        }
+        
+        .diff-item:hover {
+          box-shadow: var(--shadow-sm);
+          transform: translateY(-1px);
+        }
+        
+        .diff-item.highlighted {
+          box-shadow: 0 0 0 2px var(--color-primary);
+        }
+        
+        .diff-item::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: 4px;
+          border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+        }
+        
+        .diff-item--added::before {
+          background: var(--diff-added);
+        }
+        
+        .diff-item--deleted::before {
+          background: var(--diff-deleted);
+        }
+        
+        .diff-item--modified::before {
+          background: var(--diff-modified);
+        }
+        
+        .diff-item--equal::before {
+          background: var(--diff-equal);
+        }
+        
+        /* Enhanced Statistics */
+        .detailed-stats {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: var(--space-16);
+        }
+        
+        .detailed-stat-card {
+          background: var(--color-surface);
+          border: 1px solid var(--color-card-border);
+          border-radius: var(--radius-base);
+          padding: var(--space-16);
+          text-align: center;
+        }
+        
+        .detailed-stat-card h5 {
+          margin: 0 0 var(--space-8) 0;
+          color: var(--color-text-secondary);
+          font-size: var(--font-size-sm);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+        
+        .detailed-stat-card .number {
+          font-size: var(--font-size-3xl);
+          font-weight: var(--font-weight-bold);
+          color: var(--color-primary);
+        }
+        
+        /* Responsive design */
+        @media (max-width: 1200px) {
+          .view-mode-toggle {
+            flex-wrap: wrap;
+            gap: var(--space-2);
+          }
+          
+          .view-toggle-btn {
+            padding: var(--space-6) var(--space-12);
+            font-size: var(--font-size-xs);
+          }
+          
+          .header-controls {
+            flex-direction: column;
+            gap: var(--space-12);
+          }
+        }
+        
+        @media (max-width: 1024px) {
+          .json-panels {
+            grid-template-columns: 1fr;
+            gap: var(--space-16);
+          }
+          
+          .center-controls {
+            order: -1;
+            min-width: auto;
+            max-width: none;
+          }
+          
+          .api-panels,
+          .settings-panels {
+            grid-template-columns: 1fr;
+            gap: var(--space-16);
+          }
+          
+          .side-by-side {
+            grid-template-columns: 1fr;
+          }
+          
+          .format-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          
+          .line-content {
+            grid-template-columns: 1fr;
+          }
+          
+          .line-header {
+            grid-template-columns: 1fr;
+          }
+          
+          .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .nav-tabs {
+            flex-direction: column;
+            gap: var(--space-4);
+          }
+          
+          .panel-header {
+            flex-direction: column;
+            gap: var(--space-8);
+            align-items: stretch;
+          }
+          
+          .panel-controls {
+            flex-wrap: wrap;
+          }
+          
+          .json-input {
+            height: 300px;
+          }
+          
+          .results-header {
+            flex-direction: column;
+            gap: var(--space-8);
+            align-items: stretch;
+          }
+          
+          .results-controls {
+            justify-content: center;
+            flex-wrap: wrap;
+          }
+          
+          .filter-controls {
+            justify-content: center;
+            margin-bottom: var(--space-8);
+          }
+          
+          .search-input {
+            width: 100%;
+            margin-bottom: var(--space-8);
+          }
+          
+          .summary-stats {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          
+          .view-mode-toggle {
+            grid-template-columns: repeat(2, 1fr);
+            display: grid;
+          }
+          
+          .format-grid {
+            grid-template-columns: 1fr;
+          }
+          
+          .config-grid {
+            grid-template-columns: 1fr;
+          }
+          
+          .checkbox-grid {
+            grid-template-columns: 1fr;
+          }
+          
+          .shortcuts-grid {
+            grid-template-columns: 1fr;
+          }
+          
+          .report-modal-content {
+            width: 98%;
+            margin: var(--space-8);
+          }
+          
+          .modal-actions {
+            flex-direction: column;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .container {
+            padding-left: var(--space-8);
+            padding-right: var(--space-8);
+          }
+          
+          .main-content {
+            padding: var(--space-16) 0;
+          }
+          
+          .app-title {
+            font-size: var(--font-size-2xl);
+          }
+          
+          .summary-stats {
+            grid-template-columns: 1fr;
+          }
+          
+          .results-tabs {
+            flex-wrap: wrap;
+            justify-content: center;
+          }
+          
+          .results-tab {
+            flex: 1;
+            min-width: 80px;
+            font-size: var(--font-size-xs);
+          }
+          
+          .stats-grid {
+            grid-template-columns: 1fr;
+          }
+          
+          .diff-navigation {
+            flex-direction: column;
+            gap: var(--space-4);
+          }
+          
+          .line-by-line-container {
+            height: 400px;
+          }
+          
+          .view-toggle-btn {
+            padding: var(--space-4) var(--space-8);
+          }
+          
+          .view-toggle-btn .icon {
+            display: none;
+          }
+        }
+        
+        @font-face {
+          font-family: 'FKGroteskNeue';
+          src: url('https://r2cdn.perplexity.ai/fonts/FKGroteskNeue.woff2')
+            format('woff2');
+        }
+        
+        /* Enhanced Animations */
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes pulse {
+          0% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.7;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+        
+        .modal.show {
+          animation: slideIn var(--duration-normal) var(--ease-standard);
+        }
+        
+        .diff-item {
+          animation: slideIn var(--duration-fast) var(--ease-standard);
+        }
+        
+        .loading .spinner {
+          animation: spin 1s linear infinite, pulse 2s ease-in-out infinite;
+        }
+        
+        /* Enhanced Focus States */
+        .btn:focus-visible,
+        .form-control:focus-visible,
+        .view-toggle-btn:focus-visible,
+        .filter-btn:focus-visible {
+          outline: 2px solid var(--color-primary);
+          outline-offset: 2px;
+          z-index: 1;
+        }
+        
+        /* Accessibility */
+        .sr-only {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border-width: 0;
+        }
+        
+        :focus-visible {
+          outline: var(--focus-outline);
+          outline-offset: 2px;
+        }
+        
+        /* High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+          :root {
+            --color-border: #000;
+            --color-text: #000;
+            --color-background: #fff;
+            --diff-added: #008000;
+            --diff-deleted: #ff0000;
+            --diff-modified: #ff8c00;
+          }
+        }
+        
+        /* Reduced Motion Support */
+        @media (prefers-reduced-motion: reduce) {
+          * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+          
+          .spinner {
+            animation: none;
+            border: 4px solid var(--color-primary);
+          }
+        }
+    </style>
 </head>
 <body>
     <!-- Header Section -->
@@ -64,11 +2039,11 @@
                         <div class="panel-header">
                             <h3 class="panel-title">JSON 1</h3>
                             <div class="panel-controls">
-                                <button class="btn btn--sm" id="paste-json-1">Paste JSON</button>
+                                <button class="btn btn--sm" id="paste-json-1">Paste</button>
                                 <button class="btn btn--sm btn--outline" id="clear-json-1">Clear</button>
                                 <button class="btn btn--sm btn--outline" id="format-json-1">Format</button>
-                                <input type="file" id="upload-json-1" accept=".json" style="display: none;">
-                                <button class="btn btn--sm btn--outline" onclick="document.getElementById('upload-json-1').click()">Upload File</button>
+                                <input type="file" id="upload-json-1-input" accept=".json" style="display: none;">
+                                <button class="btn btn--sm btn--outline" id="upload-json-1">Upload</button>
                             </div>
                         </div>
                         <div class="json-input-container">
@@ -84,7 +2059,7 @@
                     <div class="center-controls">
                         <div class="control-group">
                             <label for="id-key-input" class="form-label">ID Key or Path</label>
-                            <input type="text" id="id-key-input" class="form-control" placeholder="e.g., 'id' or 'user.id' or 'users[].id'" value="id">
+                            <input type="text" id="id-key-input" class="form-control" placeholder="e.g., 'id' or 'users[].id'" value="id">
                         </div>
                         
                         <div class="control-group">
@@ -92,8 +2067,7 @@
                             <select id="comparison-mode" class="form-control">
                                 <option value="exact">Exact Match</option>
                                 <option value="type">Type Only</option>
-                                <option value="ignore-order">Ignore Order</option>
-                                <option value="semantic">Semantic</option>
+                                <option value="ignore-order">Ignore Order (Arrays)</option>
                             </select>
                         </div>
 
@@ -126,6 +2100,14 @@
                                             <input type="checkbox" id="ignore-key-order" checked>
                                             <span class="checkbox-text">Ignore key ordering</span>
                                         </label>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" id="case-sensitive" checked>
+                                            <span class="checkbox-text">Case sensitive comparison</span>
+                                        </label>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" id="ignore-extra-keys">
+                                            <span class="checkbox-text">Ignore extra keys in JSON 2</span>
+                                        </label>
                                     </div>
                                 </div>
                                 
@@ -135,18 +2117,14 @@
                                 </div>
                                 
                                 <div class="control-group">
-                                    <label for="include-paths" class="form-label">Include Paths (JSONPath patterns, one per line)</label>
-                                    <textarea id="include-paths" class="form-control" rows="3" placeholder="$.users[*].id
-$.data.profile
-$.settings.*"></textarea>
+                                    <label for="include-paths" class="form-label">Include Paths (one per line)</label>
+                                    <textarea id="include-paths" class="form-control" rows="3" placeholder="$.users[*].id&#10;$.data.profile"></textarea>
                                     <button class="btn btn--outline btn--sm" id="path-examples">Show Examples</button>
                                 </div>
                                 
                                 <div class="control-group">
-                                    <label for="exclude-paths" class="form-label">Exclude Paths (JSONPath patterns, one per line)</label>
-                                    <textarea id="exclude-paths" class="form-control" rows="3" placeholder="$.timestamp
-$.*.lastModified
-$.metadata.version"></textarea>
+                                    <label for="exclude-paths" class="form-label">Exclude Paths (one per line)</label>
+                                    <textarea id="exclude-paths" class="form-control" rows="3" placeholder="$.timestamp&#10;$.*.lastModified"></textarea>
                                 </div>
                             </div>
                         </details>
@@ -191,11 +2169,11 @@ $.metadata.version"></textarea>
                         <div class="panel-header">
                             <h3 class="panel-title">JSON 2</h3>
                             <div class="panel-controls">
-                                <button class="btn btn--sm" id="paste-json-2">Paste JSON</button>
+                                <button class="btn btn--sm" id="paste-json-2">Paste</button>
                                 <button class="btn btn--sm btn--outline" id="clear-json-2">Clear</button>
                                 <button class="btn btn--sm btn--outline" id="format-json-2">Format</button>
-                                <input type="file" id="upload-json-2" accept=".json" style="display: none;">
-                                <button class="btn btn--sm btn--outline" onclick="document.getElementById('upload-json-2').click()">Upload File</button>
+                                <input type="file" id="upload-json-2-input" accept=".json" style="display: none;">
+                                <button class="btn btn--sm btn--outline" id="upload-json-2">Upload</button>
                             </div>
                         </div>
                         <div class="json-input-container">
@@ -214,9 +2192,9 @@ $.metadata.version"></textarea>
                         <div class="results-title">
                             <h3>Comparison Results</h3>
                             <div class="diff-navigation">
-                                <button class="btn btn--outline btn--sm" id="prev-diff" disabled>← Previous</button>
+                                <button class="btn btn--outline btn--sm" id="prev-diff" disabled>←</button>
                                 <span id="diff-counter">0 of 0</span>
-                                <button class="btn btn--outline btn--sm" id="next-diff" disabled>Next →</button>
+                                <button class="btn btn--outline btn--sm" id="next-diff" disabled>→</button>
                             </div>
                         </div>
                         <div class="results-controls">
@@ -225,7 +2203,6 @@ $.metadata.version"></textarea>
                                 <button class="filter-btn" data-filter="added">Added</button>
                                 <button class="filter-btn" data-filter="deleted">Deleted</button>
                                 <button class="filter-btn" data-filter="modified">Modified</button>
-                                <button class="filter-btn" data-filter="matched">Matched</button>
                             </div>
                             <input type="text" id="search-diffs" class="form-control search-input" placeholder="Search differences...">
                             <button class="btn btn--primary btn--sm" id="generate-report-main">📊 Generate Report</button>
@@ -318,7 +2295,7 @@ $.metadata.version"></textarea>
                         <div class="api-response" id="api-1-response" style="display: none;">
                             <h4>Response</h4>
                             <div class="response-meta" id="api-1-meta"></div>
-                            <div class="response-body" id="api-1-response-body"></div>
+                            <pre class="response-body" id="api-1-response-body"></pre>
                             <button class="btn btn--outline btn--sm" id="use-response-1">Use Response</button>
                         </div>
                     </div>
@@ -366,7 +2343,7 @@ $.metadata.version"></textarea>
                         <div class="api-response" id="api-2-response" style="display: none;">
                             <h4>Response</h4>
                             <div class="response-meta" id="api-2-meta"></div>
-                            <div class="response-body" id="api-2-response-body"></div>
+                            <pre class="response-body" id="api-2-response-body"></pre>
                             <button class="btn btn--outline btn--sm" id="use-response-2">Use Response</button>
                         </div>
                     </div>
@@ -405,14 +2382,6 @@ $.metadata.version"></textarea>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Diff Display</label>
-                            <select id="diff-display" class="form-control">
-                                <option value="inline">Inline</option>
-                                <option value="side-by-side" selected>Side-by-Side</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
                             <label class="form-label">Max JSON Size (KB)</label>
                             <input type="range" id="max-size" min="100" max="10000" value="5000" class="range-input">
                             <span id="max-size-value">5000 KB</span>
@@ -438,7 +2407,6 @@ $.metadata.version"></textarea>
                                 <option value="auto" selected>Auto (System)</option>
                                 <option value="light">Light</option>
                                 <option value="dark">Dark</option>
-                                <option value="high-contrast">High Contrast</option>
                             </select>
                         </div>
 
@@ -474,23 +2442,7 @@ $.metadata.version"></textarea>
                         <h4>Report Format</h4>
                         <div class="format-grid">
                             <label class="format-option">
-                                <input type="radio" name="report-format" value="excel" checked>
-                                <div class="format-card">
-                                    <div class="format-icon">📊</div>
-                                    <div class="format-name">Excel (.xlsx)</div>
-                                    <div class="format-desc">Multi-sheet workbook with detailed analysis</div>
-                                </div>
-                            </label>
-                            <label class="format-option">
-                                <input type="radio" name="report-format" value="pdf">
-                                <div class="format-card">
-                                    <div class="format-icon">📄</div>
-                                    <div class="format-name">PDF (.pdf)</div>
-                                    <div class="format-desc">Professional report with visual formatting</div>
-                                </div>
-                            </label>
-                            <label class="format-option">
-                                <input type="radio" name="report-format" value="html">
+                                <input type="radio" name="report-format" value="html" checked>
                                 <div class="format-card">
                                     <div class="format-icon">🌐</div>
                                     <div class="format-name">HTML (.html)</div>
@@ -698,7 +2650,7 @@ $.metadata.version"></textarea>
                     </details>
                     <details>
                         <summary>Can I save my API configurations?</summary>
-                        <p>Yes, use the "Save Request" feature to store API configurations for reuse.</p>
+                        <p>Yes, use the "Save Request" feature in the API Fetch tab to store configurations for reuse (Note: persistence may be limited in some environments).</p>
                     </details>
                 </div>
             </div>
@@ -711,6 +2663,1522 @@ $.metadata.version"></textarea>
         <p>Processing comparison...</p>
     </div>
 
-    <script src="app.js"></script>
+    <script>
+        // JSON Comparison Tool - Main Application Logic (Corrected and Refactored)
+        class JSONComparator {
+            constructor() {
+                this.currentView = 'compare';
+                this.viewMode = 'tree';
+                this.apiResponses = { api1: null, api2: null };
+                this.options = {
+                    mode: 'exact',
+                    arrayMatching: 'id',
+                    normalizeStrings: false,
+                    ignoreTimestamps: false,
+                    ignoreKeyOrder: true,
+                    numericTolerance: 0,
+                    includePaths: [],
+                    excludePaths: [],
+                    caseSensitive: true,
+                    ignoreExtraKeys: false
+                };
+                
+                this.initializeApp();
+                this.init();
+            }
+        
+            initializeApp() {
+                this.lastComparison = null;
+                this.currentDiffIndex = 0;
+                this.filteredDiffs = [];
+                this.savedRequests = [];
+                this.lineByLineData = null;
+                
+                this.exampleData = {
+                    json1: {
+                        "timestamp": "2025-10-18T10:00:00Z",
+                        "version": "1.0",
+                        "users": [
+                            {
+                                "id": 101,
+                                "name": "Alice Johnson",
+                                "email": "alice@company.com",
+                                "age": 28,
+                                "department": "Engineering",
+                                "salary": 95000,
+                                "skills": ["Python", "JavaScript", "React"],
+                                "metadata": {
+                                    "created": "2023-01-15",
+                                    "lastLogin": "2025-10-17"
+                                }
+                            },
+                            {
+                                "id": 102,
+                                "name": "Bob Smith",
+                                "email": "bob@company.com",
+                                "age": 35,
+                                "department": "Marketing",
+                                "salary": 78000,
+                                "skills": ["SEO", "Content Marketing"],
+                                "metadata": {
+                                    "created": "2022-06-20",
+                                    "lastLogin": "2025-10-16"
+                                }
+                            },
+                            {
+                                "id": 103,
+                                "name": "Carol White",
+                                "email": "carol@company.com",
+                                "age": 42,
+                                "department": "Sales",
+                                "salary": 88000,
+                                "skills": ["Negotiation", "CRM"],
+                                "metadata": {
+                                    "created": "2021-03-10",
+                                    "lastLogin": "2025-10-15"
+                                }
+                            }
+                        ],
+                        "totalCount": 3
+                    },
+                    json2: {
+                        "timestamp": "2025-10-18T12:00:00Z",
+                        "version": "1.1",
+                        "users": [
+                            {
+                                "id": 101,
+                                "name": "Alice Johnson",
+                                "email": "alice@company.com",
+                                "age": 29,
+                                "department": "Engineering",
+                                "salary": 98000,
+                                "skills": ["Python", "JavaScript", "React", "Node.js"],
+                                "metadata": {
+                                    "created": "2023-01-15",
+                                    "lastLogin": "2025-10-18"
+                                }
+                            },
+                            {
+                                "id": 102,
+                                "name": "Bob Smith",
+                                "email": "bob@company.com",
+                                "age": 35,
+                                "department": "Marketing",
+                                "salary": 78000,
+                                "skills": ["SEO", "Content Marketing"],
+                                "metadata": {
+                                    "created": "2022-06-20",
+                                    "lastLogin": "2025-10-16"
+                                }
+                            },
+                            {
+                                "id": 104,
+                                "name": "David Brown",
+                                "email": "david@company.com",
+                                "age": 31,
+                                "department": "Engineering",
+                                "salary": 92000,
+                                "skills": ["Java", "Spring Boot", "Microservices"],
+                                "metadata": {
+                                    "created": "2025-10-01",
+                                    "lastLogin": "2025-10-18"
+                                }
+                            }
+                        ],
+                        "totalCount": 3
+                    },
+                    idPath: 'users[].id'
+                };
+            }
+        
+            init() {
+                this.setupEventListeners();
+                this.setupKeyboardShortcuts();
+                this.loadSettings();
+                this.updateCharCounts();
+            }
+        
+            setupEventListeners() {
+                // Navigation
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => this.switchView(e.currentTarget.dataset.view));
+                });
+                
+                // View Mode Toggle
+                document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchViewMode(e.currentTarget.dataset.view));
+                });
+                
+                // Header Actions
+                document.getElementById('dark-mode-toggle').addEventListener('click', () => this.toggleDarkMode());
+                document.getElementById('help-btn').addEventListener('click', () => this.showHelp());
+        
+                // JSON Input Events
+                document.getElementById('json-input-1').addEventListener('input', () => this.handleJSONInput(1));
+                document.getElementById('json-input-2').addEventListener('input', () => this.handleJSONInput(2));
+        
+                // Control buttons - Compare view
+                document.getElementById('paste-json-1').addEventListener('click', () => this.pasteJSON(1));
+                document.getElementById('paste-json-2').addEventListener('click', () => this.pasteJSON(2));
+                document.getElementById('clear-json-1').addEventListener('click', () => this.clearJSON(1));
+                document.getElementById('clear-json-2').addEventListener('click', () => this.clearJSON(2));
+                document.getElementById('format-json-1').addEventListener('click', () => this.formatJSON(1));
+                document.getElementById('format-json-2').addEventListener('click', () => this.formatJSON(2));
+                
+                document.getElementById('upload-json-1').addEventListener('click', () => document.getElementById('upload-json-1-input').click());
+                document.getElementById('upload-json-2').addEventListener('click', () => document.getElementById('upload-json-2-input').click());
+                document.getElementById('upload-json-1-input').addEventListener('change', (e) => this.uploadJSON(1, e));
+                document.getElementById('upload-json-2-input').addEventListener('change', (e) => this.uploadJSON(2, e));
+                
+                document.getElementById('compare-btn').addEventListener('click', () => this.compareJSONs());
+                document.getElementById('swap-btn').addEventListener('click', () => this.swapJSONs());
+                document.getElementById('load-example').addEventListener('click', () => this.loadExample());
+                
+                // Results controls
+                document.getElementById('collapse-results').addEventListener('click', () => this.collapseResults());
+                
+                // Results tabs
+                document.querySelectorAll('.results-tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => this.switchResultsTab(e.currentTarget.dataset.tab));
+                });
+        
+                // API Fetch Events
+                document.getElementById('fetch-api-1').addEventListener('click', () => this.fetchAPI(1));
+                document.getElementById('fetch-api-2').addEventListener('click', () => this.fetchAPI(2));
+                document.getElementById('use-response-1').addEventListener('click', () => this.useAPIResponse(1));
+                document.getElementById('use-response-2').addEventListener('click', () => this.useAPIResponse(2));
+                document.getElementById('compare-responses').addEventListener('click', () => this.compareAPIResponses());
+                
+                // Header management
+                document.getElementById('add-header-1').addEventListener('click', () => this.addHeader(1));
+                document.getElementById('add-header-2').addEventListener('click', () => this.addHeader(2));
+                
+                // Advanced settings
+                document.getElementById('path-examples').addEventListener('click', () => this.showPathExamples());
+                
+                // Report generation
+                document.getElementById('generate-report-btn').addEventListener('click', () => this.showReportModal());
+                document.getElementById('generate-report-main').addEventListener('click', () => this.showReportModal());
+                document.getElementById('generate-report-final').addEventListener('click', () => this.generateReport());
+                document.getElementById('cancel-report').addEventListener('click', () => this.hideReportModal());
+                document.getElementById('close-report-modal').addEventListener('click', () => this.hideReportModal());
+                
+                // Diff navigation
+                document.getElementById('prev-diff').addEventListener('click', () => this.navigateDiff(-1));
+                document.getElementById('next-diff').addEventListener('click', () => this.navigateDiff(1));
+                document.getElementById('search-diffs').addEventListener('input', (e) => this.searchDiffs(e.target.value));
+                
+                // Filter controls
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.filterDiffs(e.currentTarget.dataset.filter));
+                });
+                
+                // Report format change
+                document.addEventListener('change', (e) => {
+                    if (e.target.name === 'report-format') {
+                        this.updateReportPreview();
+                    }
+                });
+                
+                // Settings events
+                document.getElementById('theme-selector').addEventListener('change', (e) => this.setTheme(e.target.value));
+                document.getElementById('font-size').addEventListener('change', (e) => this.setFontSize(e.target.value));
+                document.getElementById('max-size').addEventListener('input', (e) => {
+                    document.getElementById('max-size-value').textContent = e.target.value + ' KB';
+                });
+                
+                // Remove header buttons (delegated)
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('remove-header')) {
+                        e.target.parentElement.remove();
+                    }
+                });
+            }
+        
+            setupKeyboardShortcuts() {
+                document.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey)) {
+                        switch(e.key) {
+                            case 'Enter': e.preventDefault(); this.compareJSONs(); break;
+                            case 'k': e.preventDefault(); this.clearAllJSON(); break;
+                            case 'f':
+                                e.preventDefault();
+                                if (e.shiftKey) {
+                                    document.getElementById('search-diffs')?.focus();
+                                } else {
+                                    this.formatAllJSON();
+                                }
+                                break;
+                            case 's': e.preventDefault(); this.swapJSONs(); break;
+                            case 'e': e.preventDefault(); this.loadExample(); break;
+                            case 'r':
+                                e.preventDefault();
+                                if (this.lastComparison) this.showReportModal();
+                                break;
+                        }
+                    } else if (e.altKey) {
+                        switch(e.key) {
+                            case 'ArrowUp': e.preventDefault(); this.navigateDiff(-1); break;
+                            case 'ArrowDown': e.preventDefault(); this.navigateDiff(1); break;
+                        }
+                    } else if (e.key === 'F1') {
+                        e.preventDefault();
+                        this.showHelp();
+                    }
+                });
+            }
+        
+            switchView(viewName) {
+                document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+                document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+                
+                document.getElementById(`${viewName}-view`).classList.add('active');
+                document.querySelector(`.nav-tab[data-view="${viewName}"]`).classList.add('active');
+                this.currentView = viewName;
+            }
+
+            switchViewMode(mode) {
+                document.querySelectorAll('.view-toggle-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`.view-toggle-btn[data-view="${mode}"]`).classList.add('active');
+                this.viewMode = mode;
+                if (this.lastComparison) this.displayResults(this.lastComparison);
+            }
+
+            toggleDarkMode() {
+                const currentScheme = document.documentElement.getAttribute('data-color-scheme');
+                const newScheme = currentScheme === 'dark' ? 'light' : 'dark';
+                this.setTheme(newScheme);
+            }
+
+            showHelp() {
+                document.getElementById('help-modal').classList.add('show');
+            }
+        
+            // UI Handlers for JSON inputs
+            handleJSONInput(inputNumber) {
+                const input = document.getElementById(`json-input-${inputNumber}`);
+                const validation = document.getElementById(`validation-${inputNumber}`);
+                const charCount = document.getElementById(`char-count-${inputNumber}`);
+                
+                const content = input.value;
+                charCount.textContent = `${content.length} characters`;
+                
+                if (content.trim()) {
+                    try {
+                        JSON.parse(content);
+                        validation.textContent = '✓ Valid JSON';
+                        validation.className = 'validation-status valid';
+                    } catch (e) {
+                        validation.textContent = '✗ Invalid JSON';
+                        validation.className = 'validation-status invalid';
+                    }
+                } else {
+                    validation.textContent = '';
+                    validation.className = 'validation-status';
+                }
+            }
+        
+            updateCharCounts() {
+                [1, 2].forEach(num => this.handleJSONInput(num));
+            }
+        
+            async pasteJSON(inputNumber) {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    const input = document.getElementById(`json-input-${inputNumber}`);
+                    input.value = text;
+                    this.handleJSONInput(inputNumber);
+                    if (document.getElementById('auto-format').checked) this.formatJSON(inputNumber);
+                } catch (err) {
+                    alert('Failed to paste from clipboard. Please paste manually.');
+                }
+            }
+        
+            clearJSON(inputNumber) {
+                const input = document.getElementById(`json-input-${inputNumber}`);
+                if (input) {
+                    input.value = '';
+                    this.handleJSONInput(inputNumber);
+                }
+            }
+        
+            clearAllJSON() {
+                this.clearJSON(1);
+                this.clearJSON(2);
+            }
+        
+            formatJSON(inputNumber) {
+                const input = document.getElementById(`json-input-${inputNumber}`);
+                try {
+                    const parsed = JSON.parse(input.value);
+                    input.value = JSON.stringify(parsed, null, 2);
+                    this.handleJSONInput(inputNumber);
+                } catch (e) {
+                    alert('Cannot format invalid JSON: ' + e.message);
+                }
+            }
+        
+            formatAllJSON() {
+                this.formatJSON(1);
+                this.formatJSON(2);
+            }
+        
+            uploadJSON(inputNumber, event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const input = document.getElementById(`json-input-${inputNumber}`);
+                    input.value = e.target.result;
+                    this.handleJSONInput(inputNumber);
+                    if (document.getElementById('auto-format').checked) this.formatJSON(inputNumber);
+                };
+                reader.readAsText(file);
+            }
+        
+            swapJSONs() {
+                const input1 = document.getElementById('json-input-1');
+                const input2 = document.getElementById('json-input-2');
+                const temp = input1.value;
+                input1.value = input2.value;
+                input2.value = temp;
+                this.handleJSONInput(1);
+                this.handleJSONInput(2);
+            }
+        
+            loadExample() {
+                const input1 = document.getElementById('json-input-1');
+                const input2 = document.getElementById('json-input-2');
+                const idKeyInput = document.getElementById('id-key-input');
+                
+                input1.value = JSON.stringify(this.exampleData.json1, null, 2);
+                input2.value = JSON.stringify(this.exampleData.json2, null, 2);
+                if (idKeyInput) idKeyInput.value = this.exampleData.idPath;
+                
+                this.handleJSONInput(1);
+                this.handleJSONInput(2);
+            }
+        
+            // Main Comparison Logic
+            compareJSONs() {
+                const json1Text = document.getElementById('json-input-1').value;
+                const json2Text = document.getElementById('json-input-2').value;
+                
+                if (!json1Text.trim() || !json2Text.trim()) {
+                    alert('Please provide input for both JSON panels.');
+                    return;
+                }
+                
+                try {
+                    const json1 = JSON.parse(json1Text);
+                    const json2 = JSON.parse(json2Text);
+                    this.showLoading(true);
+                    
+                    setTimeout(() => {
+                        try {
+                            const comparison = this.performComparison(json1, json2);
+                            this.lastComparison = comparison;
+                            this.displayResults(comparison);
+                        } catch (error) {
+                            console.error('Comparison failed:', error);
+                            alert('Comparison failed: ' + error.message);
+                        } finally {
+                            this.showLoading(false);
+                        }
+                    }, 100);
+                } catch (e) {
+                    alert('Please ensure both inputs contain valid JSON: ' + e.message);
+                }
+            }
+        
+            performComparison(json1, json2) {
+                const startTime = performance.now();
+                this.updateOptionsFromUI();
+        
+                let objects1, objects2;
+                try {
+                    if (this.options.idKey && this.options.idKey.trim()) {
+                        objects1 = this.extractByPath(json1, this.options.idKey);
+                        objects2 = this.extractByPath(json2, this.options.idKey);
+                    } else {
+                        objects1 = [{ id: 'root', data: json1 }];
+                        objects2 = [{ id: 'root', data: json2 }];
+                    }
+                } catch (error) {
+                    console.warn('Path extraction failed, using direct comparison:', error.message);
+                    objects1 = [{ id: 'root', data: json1 }];
+                    objects2 = [{ id: 'root', data: json2 }];
+                }
+        
+                const { matched, onlyInFirst, onlyInSecond, differences } = this.compareObjectLists(objects1, objects2);
+                const endTime = performance.now();
+                
+                const summary = this.calculateSummary(differences, matched.length);
+        
+                return {
+                    matched, onlyInFirst, onlyInSecond, differences, summary,
+                    options: this.options,
+                    originalData: { json1, json2 },
+                    timing: {
+                        duration: Math.round(endTime - startTime),
+                        objectsCompared: objects1.length + objects2.length
+                    }
+                };
+            }
+
+            compareObjectLists(objects1, objects2) {
+                const matched = [];
+                const onlyInFirst = [];
+                const onlyInSecond = [];
+                const differences = [];
+                
+                const map1 = new Map(objects1.map(obj => [String(obj.id), obj]));
+                const map2 = new Map(objects2.map(obj => [String(obj.id), obj]));
+                
+                for (const [id, obj1] of map1) {
+                    const obj2 = map2.get(id);
+                    if (obj2) {
+                        const objDiffs = this.compareObjects(obj1.data, obj2.data, `ID:${id}`);
+                        if(objDiffs.length > 0) {
+                            differences.push(...objDiffs);
+                        }
+                        matched.push({ id, json1: obj1.data, json2: obj2.data });
+                        map2.delete(id);
+                    } else {
+                        onlyInFirst.push(obj1);
+                        differences.push({ type: 'deleted', path: `ID: ${id}`, value: obj1.data });
+                    }
+                }
+                
+                for (const [id, obj2] of map2) {
+                    onlyInSecond.push(obj2);
+                    differences.push({ type: 'added', path: `ID: ${id}`, value: obj2.data });
+                }
+
+                return { matched, onlyInFirst, onlyInSecond, differences };
+            }
+        
+            // Recursive comparison methods
+            compareObjects(obj1, obj2, basePath = '') {
+                if (!this.shouldIncludePath(basePath)) return [];
+
+                const differences = [];
+                const allKeys = new Set([...Object.keys(obj1), ...Object.keys(obj2)]);
+
+                for (const key of allKeys) {
+                    const path = basePath ? `${basePath}.${key}` : key;
+                    if (!this.shouldIncludePath(path)) continue;
+
+                    const value1 = obj1[key];
+                    const value2 = obj2[key];
+            
+                    if (!(key in obj1)) {
+                        if (this.shouldIncludePath(path)) {
+                           differences.push({ type: 'added', path, value: value2 });
+                        }
+                    } else if (!(key in obj2)) {
+                        if (!this.options.ignoreExtraKeys && this.shouldIncludePath(path)) {
+                            differences.push({ type: 'deleted', path, value: value1 });
+                        }
+                    } else {
+                        const comparison = this.compareValues(value1, value2, path);
+                        if (comparison) {
+                            if (Array.isArray(comparison)) {
+                                differences.push(...comparison);
+                            } else {
+                                differences.push(comparison);
+                            }
+                        }
+                    }
+                }
+                return differences;
+            }
+        
+            compareValues(value1, value2, path) {
+                if (this.isTimestamp(path) && this.options.ignoreTimestamps) return null;
+        
+                if (value1 === null && value2 === null) return null;
+                if (value1 === undefined && value2 === undefined) return null;
+                
+                if (value1 === null || value1 === undefined || value2 === null || value2 === undefined) {
+                    return { type: 'modified', path, oldValue: value1, newValue: value2 };
+                }
+                
+                let pValue1 = value1, pValue2 = value2;
+                if (this.options.normalizeStrings && typeof value1 === 'string' && typeof value2 === 'string') {
+                    pValue1 = value1.trim().toLowerCase();
+                    pValue2 = value2.trim().toLowerCase();
+                }
+                
+                if (this.options.numericTolerance > 0 && typeof value1 === 'number' && typeof value2 === 'number') {
+                    if (Math.abs(value1 - value2) <= this.options.numericTolerance) return null;
+                }
+                
+                if (this.options.mode === 'type') {
+                    return typeof pValue1 !== typeof pValue2 ? { type: 'modified', path, oldValue: `${typeof value1}: ${value1}`, newValue: `${typeof value2}: ${value2}` } : null;
+                }
+                
+                if (Array.isArray(value1) && Array.isArray(value2)) {
+                    return this.compareArraysAdvanced(value1, value2, path);
+                }
+                
+                if (typeof value1 === 'object' && typeof value2 === 'object') {
+                    const nestedDiffs = this.compareObjects(value1, value2, path);
+                    return nestedDiffs && nestedDiffs.length > 0 ? nestedDiffs : null;
+                }
+                
+                const equal = this.options.caseSensitive ? pValue1 === pValue2 : String(pValue1).toLowerCase() === String(pValue2).toLowerCase();
+                return equal ? null : { type: 'modified', path, oldValue: value1, newValue: value2 };
+            }
+            
+            compareArraysAdvanced(arr1, arr2, path) {
+                if (this.options.mode === 'ignore-order' || this.options.arrayMatching === 'hash') {
+                    const hash1 = JSON.stringify(arr1.map(JSON.stringify).sort());
+                    const hash2 = JSON.stringify(arr2.map(JSON.stringify).sort());
+                    if (hash1 === hash2) return null;
+                }
+        
+                if (JSON.stringify(arr1) === JSON.stringify(arr2)) return null;
+                
+                return { type: 'modified', path, oldValue: arr1, newValue: arr2 };
+            }
+
+            // Path and option helpers
+            updateOptionsFromUI() {
+                this.options.idKey = document.getElementById('id-key-input').value;
+                this.options.mode = document.getElementById('comparison-mode').value;
+                this.options.arrayMatching = document.getElementById('array-matching').value;
+                this.options.normalizeStrings = document.getElementById('normalize-strings').checked;
+                this.options.ignoreTimestamps = document.getElementById('ignore-timestamps').checked;
+                this.options.ignoreKeyOrder = document.getElementById('ignore-key-order').checked;
+                this.options.numericTolerance = parseFloat(document.getElementById('numeric-tolerance').value) || 0;
+                this.options.caseSensitive = document.getElementById('case-sensitive').checked;
+                this.options.ignoreExtraKeys = document.getElementById('ignore-extra-keys').checked;
+                const includePaths = document.getElementById('include-paths').value.trim();
+                const excludePaths = document.getElementById('exclude-paths').value.trim();
+                this.options.includePaths = includePaths ? includePaths.split('\n').filter(p => p.trim()) : [];
+                this.options.excludePaths = excludePaths ? excludePaths.split('\n').filter(p => p.trim()) : [];
+            }
+
+            isTimestamp(path) {
+                const timestampPatterns = [/timestamp/i, /created.*at/i, /updated.*at/i, /modified.*at/i, /date/i, /time/i];
+                return timestampPatterns.some(pattern => pattern.test(path));
+            }
+            
+            shouldIncludePath(path) {
+                const matchPattern = (p, pattern) => new RegExp(`^${pattern.replace(/\*/g, '.*')}$`).test(p);
+                if (this.options.excludePaths.length > 0 && this.options.excludePaths.some(p => matchPattern(path, p))) {
+                    return false;
+                }
+                if (this.options.includePaths.length > 0 && !this.options.includePaths.some(p => matchPattern(path, p))) {
+                    return false;
+                }
+                return true;
+            }
+            
+            matchesPattern(path, pattern) {
+                return path.includes(pattern.replace(/\*|\[\]|\$/g, ''));
+            }
+        
+            // Results Display Methods
+            displayResults(comparison) {
+                const resultsPanel = document.getElementById('results-panel');
+                resultsPanel.style.display = 'block';
+                resultsPanel.scrollIntoView({ behavior: 'smooth' });
+                
+                document.getElementById('generate-report-btn').disabled = false;
+                document.getElementById('generate-report-main').disabled = false;
+                
+                this.updateStatisticsPanel(comparison.summary, comparison.timing);
+                this.displayDifferences(comparison.differences);
+                this.displaySummary(comparison.summary);
+                this.displaySideBySide(comparison.matched, comparison.onlyInFirst, comparison.onlyInSecond);
+                this.displayDetailedStats(comparison);
+                
+                this.generateLineByLineData(comparison);
+                if (this.viewMode === 'line') this.renderLineByLine();
+                
+                this.filteredDiffs = comparison.differences || [];
+                this.currentDiffIndex = 0;
+                this.updateDiffNavigation();
+            }
+
+            updateStatisticsPanel(summary, timing) {
+                const statsPanel = document.getElementById('stats-panel');
+                statsPanel.style.display = 'block';
+                document.getElementById('total-diffs').textContent = summary.totalDifferences;
+                document.getElementById('stat-added').textContent = summary.added;
+                document.getElementById('stat-deleted').textContent = summary.deleted;
+                document.getElementById('stat-modified').textContent = summary.modified;
+                
+                const totalItems = summary.added + summary.deleted + summary.modified + summary.equal;
+                const matchPercentage = totalItems > 0 ? Math.round((summary.equal / totalItems) * 100) : 100;
+                
+                document.getElementById('match-percentage').textContent = matchPercentage;
+                document.getElementById('match-progress').style.width = matchPercentage + '%';
+            }
+
+            displayDifferences(differences) {
+                const container = document.getElementById('differences-list');
+                container.innerHTML = '';
+                
+                if (differences.length === 0) {
+                    container.innerHTML = '<p>No differences found!</p>';
+                    return;
+                }
+                
+                differences.forEach(diff => {
+                    const item = this.createDiffElement(diff);
+                    container.appendChild(item);
+                });
+            }
+
+            createDiffElement(diff) {
+                const item = document.createElement('div');
+                item.className = `diff-item diff-item--${diff.type}`;
+                
+                const path = document.createElement('div');
+                path.className = 'diff-path';
+                path.textContent = diff.path;
+                
+                const value = document.createElement('div');
+                value.className = 'diff-value';
+                
+                switch (diff.type) {
+                    case 'added':
+                        value.innerHTML = `<span class="diff-new">+ ${this.formatValue(diff.value)}</span>`;
+                        break;
+                    case 'deleted':
+                        value.innerHTML = `<span class="diff-old">- ${this.formatValue(diff.value)}</span>`;
+                        break;
+                    case 'modified':
+                        value.innerHTML = `<span class="diff-old">- ${this.formatValue(diff.oldValue)}</span><br><span class="diff-new">+ ${this.formatValue(diff.newValue)}</span>`;
+                        break;
+                }
+                
+                item.appendChild(path);
+                item.appendChild(value);
+                return item;
+            }
+        
+            displaySummary(summary) {
+                const container = document.getElementById('summary-stats');
+                if (!container) return;
+                
+                const stats = [
+                    { label: 'Total Differences', value: summary.totalDifferences, color: 'var(--color-info)' },
+                    { label: 'Added', value: summary.added, color: 'var(--diff-added)' },
+                    { label: 'Deleted', value: summary.deleted, color: 'var(--diff-deleted)' },
+                    { label: 'Modified', value: summary.modified, color: 'var(--diff-modified)' },
+                    { label: 'Equal Objects', value: summary.equal, color: 'var(--diff-equal)' }
+                ];
+                
+                container.innerHTML = stats.map(stat => `
+                    <div class="stat-item">
+                        <div class="stat-number" style="color: ${stat.color}">${stat.value}</div>
+                        <div class="stat-label">${stat.label}</div>
+                    </div>
+                `).join('');
+            }
+        
+            displaySideBySide(matched, onlyInFirst, onlyInSecond) {
+                const container = document.getElementById('side-by-side-view');
+                if (!container) return;
+                
+                container.innerHTML = `
+                    <div class="side-by-side">
+                        <div class="side-panel">
+                            <div class="side-title">JSON 1</div>
+                            <div class="side-content" id="side-content-1"></div>
+                        </div>
+                        <div class="side-panel">
+                            <div class="side-title">JSON 2</div>
+                            <div class="side-content" id="side-content-2"></div>
+                        </div>
+                    </div>`;
+                
+                const content1 = document.getElementById('side-content-1');
+                const content2 = document.getElementById('side-content-2');
+                
+                const allItems = [
+                    ...matched.map(p => ({ id: p.id, data1: p.json1, data2: p.json2, type: 'matched' })),
+                    ...onlyInFirst.map(i => ({ id: i.id, data1: i.data, data2: null, type: 'deleted' })),
+                    ...onlyInSecond.map(i => ({ id: i.id, data1: null, data2: i.data, type: 'added' }))
+                ].sort((a,b) => String(a.id).localeCompare(String(b.id)));
+
+                allItems.forEach(item => {
+                    const el1 = document.createElement('div');
+                    const el2 = document.createElement('div');
+
+                    if (item.data1) {
+                        el1.innerHTML = `<strong>ID: ${item.id}</strong><pre>${this.escapeHtml(JSON.stringify(item.data1, null, 2))}</pre>`;
+                        if (item.type === 'deleted') el1.style.background = 'var(--diff-deleted-bg)';
+                    } else {
+                        el1.innerHTML = `<div style="color: #999; padding: 8px;">---</div>`;
+                    }
+                     if (item.data2) {
+                        el2.innerHTML = `<strong>ID: ${item.id}</strong><pre>${this.escapeHtml(JSON.stringify(item.data2, null, 2))}</pre>`;
+                         if (item.type === 'added') el2.style.background = 'var(--diff-added-bg)';
+                    } else {
+                        el2.innerHTML = `<div style="color: #999; padding: 8px;">---</div>`;
+                    }
+                    content1.appendChild(el1);
+                    content2.appendChild(el2);
+                });
+            }
+            
+            navigateDiff(direction) {
+                if (this.filteredDiffs.length === 0) return;
+                this.currentDiffIndex = (this.currentDiffIndex + direction + this.filteredDiffs.length) % this.filteredDiffs.length;
+                this.highlightDiff(this.currentDiffIndex);
+                this.updateDiffNavigation();
+            }
+
+            filterDiffs(filter) {
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+                
+                if (filter === 'all') {
+                    this.filteredDiffs = this.lastComparison.differences;
+                } else {
+                    this.filteredDiffs = this.lastComparison.differences.filter(diff => diff.type === filter);
+                }
+                this.currentDiffIndex = 0;
+                this.updateDiffNavigation();
+                this.refreshDiffDisplay();
+            }
+
+            searchDiffs(query) {
+                const lowercaseQuery = query.toLowerCase();
+                if (!query.trim()) {
+                    this.filteredDiffs = this.lastComparison.differences;
+                } else {
+                    this.filteredDiffs = this.lastComparison.differences.filter(diff => {
+                        const path = (diff.path || '').toLowerCase();
+                        const value = JSON.stringify(diff.value || diff.newValue || diff.oldValue || '').toLowerCase();
+                        return path.includes(lowercaseQuery) || value.includes(lowercaseQuery);
+                    });
+                }
+                this.currentDiffIndex = 0;
+                this.updateDiffNavigation();
+                this.refreshDiffDisplay();
+            }
+            
+            updateDiffNavigation() {
+                const total = this.filteredDiffs.length;
+                const current = total > 0 ? this.currentDiffIndex + 1 : 0;
+                
+                document.getElementById('diff-counter').textContent = `${current} of ${total}`;
+                document.getElementById('prev-diff').disabled = total === 0;
+                document.getElementById('next-diff').disabled = total === 0;
+            }
+
+            highlightDiff(index) {
+                document.querySelectorAll('.diff-item.highlighted').forEach(item => item.classList.remove('highlighted'));
+                const diffItems = document.querySelectorAll('#differences-list .diff-item');
+                if (diffItems[index]) {
+                    diffItems[index].classList.add('highlighted');
+                    diffItems[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+
+            refreshDiffDisplay() {
+                const container = document.getElementById('differences-list');
+                container.innerHTML = '';
+                
+                if (this.filteredDiffs.length === 0) {
+                    container.innerHTML = '<p>No differences found matching current filter.</p>';
+                    return;
+                }
+                
+                this.filteredDiffs.forEach((diff, index) => {
+                    const item = this.createDiffElement(diff);
+                    item.addEventListener('click', () => {
+                        this.currentDiffIndex = index;
+                        this.highlightDiff(index);
+                        this.updateDiffNavigation();
+                    });
+                    container.appendChild(item);
+                });
+            }
+            
+            displayDetailedStats(comparison) {
+                const container = document.getElementById('detailed-stats');
+                const timing = comparison.timing || {};
+                
+                const stats = [
+                    { label: 'Comparison Duration', value: `${timing.duration || 0}ms` },
+                    { label: 'Objects Compared', value: timing.objectsCompared || 0 },
+                    { label: 'Match Percentage', value: this.calculateMatchPercentage(comparison.summary) + '%' },
+                    { label: 'Accuracy Score', value: this.calculateAccuracyScore(comparison.summary) },
+                    { label: 'Data Integrity', value: this.calculateDataIntegrity(comparison.summary) },
+                    { label: 'Change Density', value: this.calculateChangeDensity(comparison.summary) }
+                ];
+                
+                container.innerHTML = stats.map(stat => `
+                    <div class="detailed-stat-card">
+                        <h5>${stat.label}</h5>
+                        <div class="number">${stat.value}</div>
+                    </div>
+                `).join('');
+            }
+        
+            calculateSummary(differences, equalCount) {
+                const summary = { totalDifferences: 0, added: 0, deleted: 0, modified: 0, equal: equalCount };
+                differences.forEach(diff => {
+                    if (diff.type && summary.hasOwnProperty(diff.type)) {
+                        summary[diff.type]++;
+                    }
+                });
+                summary.totalDifferences = summary.added + summary.deleted + summary.modified;
+                return summary;
+            }
+
+            calculateMatchPercentage(summary) {
+                const total = summary.totalDifferences + summary.equal;
+                return total > 0 ? Math.round((summary.equal / total) * 100) : 100;
+            }
+            
+            calculateAccuracyScore(summary) {
+                const total = summary.totalDifferences + summary.equal;
+                if (total === 0) return '100%';
+                const score = ((summary.equal + (summary.modified * 0.5)) / total) * 100;
+                return Math.round(score) + '%';
+            }
+            
+            calculateDataIntegrity(summary) {
+                const criticalChanges = summary.deleted + (summary.modified * 0.7);
+                if (criticalChanges === 0) return 'Perfect';
+                if (criticalChanges < 5) return 'High';
+                if (criticalChanges < 20) return 'Medium';
+                return 'Low';
+            }
+            
+            calculateChangeDensity(summary) {
+                const totalChanges = summary.totalDifferences;
+                const totalItems = totalChanges + summary.equal;
+                if (totalItems === 0) return '0%';
+                const density = (totalChanges / totalItems) * 100;
+                return Math.round(density) + '%';
+            }
+            
+            showPathExamples() {
+                alert('Common JSONPath-like Examples:\n\n' + [
+                    'id',
+                    'user.id', 
+                    'users[].id',
+                    'data.items[].userId',
+                ].join('\n'));
+            }
+            
+            formatValue(value) {
+                if (typeof value === 'string') return `"${this.escapeHtml(value)}"`;
+                if (typeof value === 'object' && value !== null) return this.escapeHtml(JSON.stringify(value));
+                return String(value);
+            }
+        
+            switchResultsTab(tabName) {
+                document.querySelectorAll('.results-tab').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+                
+                if (tabName === 'line-by-line') this.renderLineByLine();
+            }
+
+            // --- Key-Based Line-by-Line Comparison ---
+            getAlignedLines(lines1, lines2) {
+                const m = lines1.length;
+                const n = lines2.length;
+                const dp = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
+
+                for (let i = 1; i <= m; i++) {
+                    for (let j = 1; j <= n; j++) {
+                        if (lines1[i - 1] === lines2[j - 1]) {
+                            dp[i][j] = dp[i - 1][j - 1] + 1;
+                        } else {
+                            dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                        }
+                    }
+                }
+
+                const result = [];
+                let i = m, j = n;
+                while (i > 0 || j > 0) {
+                    if (i > 0 && j > 0 && lines1[i - 1] === lines2[j - 1]) {
+                        result.unshift({ line1: lines1[i - 1], line2: lines2[j - 1], type: 'equal' });
+                        i--; j--;
+                    } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+                        result.unshift({ line1: null, line2: lines2[j - 1], type: 'added' });
+                        j--;
+                    } else if (i > 0 && (j === 0 || dp[i][j - 1] < dp[i - 1][j])) {
+                        result.unshift({ line1: lines1[i - 1], line2: null, type: 'deleted' });
+                        i--;
+                    } else {
+                        break;
+                    }
+                }
+                // Check for modifications by pairing remaining added/deleted
+                for (let k = 0; k < result.length - 1; k++) {
+                    if (result[k].type === 'deleted' && result[k+1].type === 'added') {
+                        result[k] = {line1: result[k].line1, line2: result[k+1].line2, type: 'modified'};
+                        result.splice(k+1, 1);
+                    }
+                }
+                return result;
+            }
+
+            generateLineByLineData(comparison) {
+                const { matched, onlyInFirst, onlyInSecond } = comparison;
+
+                const allIds = new Set([
+                    ...matched.map(p => p.id), ...onlyInFirst.map(i => i.id), ...onlyInSecond.map(i => i.id)
+                ]);
+                const sortedIds = Array.from(allIds).sort((a, b) => String(a).localeCompare(String(b), undefined, {numeric: true}));
+
+                const matchedMap = new Map(matched.map(p => [p.id, p]));
+                const onlyInFirstMap = new Map(onlyInFirst.map(i => [i.id, i]));
+                const onlyInSecondMap = new Map(onlyInSecond.map(i => [i.id, i]));
+
+                const finalLines = [];
+                sortedIds.forEach(id => {
+                    finalLines.push({ type: 'separator', id: id });
+                    if (matchedMap.has(id)) {
+                        const pair = matchedMap.get(id);
+                        const lines1 = JSON.stringify(pair.json1, null, 2).split('\n');
+                        const lines2 = JSON.stringify(pair.json2, null, 2).split('\n');
+                        const alignedLines = this.getAlignedLines(lines1, lines2);
+                        finalLines.push(...alignedLines);
+                    } else if (onlyInFirstMap.has(id)) {
+                        const item = onlyInFirstMap.get(id);
+                        JSON.stringify(item.data, null, 2).split('\n').forEach(line => finalLines.push({ line1: line, line2: null, type: 'deleted' }));
+                    } else if (onlyInSecondMap.has(id)) {
+                        const item = onlyInSecondMap.get(id);
+                        JSON.stringify(item.data, null, 2).split('\n').forEach(line => finalLines.push({ line1: null, line2: line, type: 'added' }));
+                    }
+                });
+                this.lineByLineData = finalLines;
+            }
+            
+            renderLineByLine() {
+                if (!this.lineByLineData) return;
+                
+                const panel1 = document.getElementById('line-panel-1');
+                const panel2 = document.getElementById('line-panel-2');
+                panel1.innerHTML = '';
+                panel2.innerHTML = '';
+                
+                let lineNum1 = 1, lineNum2 = 1;
+
+                this.lineByLineData.forEach(diff => {
+                    if (diff.type === 'separator') {
+                         const sep1 = document.createElement('div');
+                         const sep2 = document.createElement('div');
+                         sep1.className = 'line-item context';
+                         sep2.className = 'line-item context';
+                         sep1.innerHTML = `<div class="line-code">--- ID: ${diff.id} ---</div>`;
+                         sep2.innerHTML = `<div class="line-code">--- ID: ${diff.id} ---</div>`;
+                         panel1.appendChild(sep1);
+                         panel2.appendChild(sep2);
+                         return;
+                    }
+                    
+                    const num1 = diff.line1 !== null ? lineNum1++ : '';
+                    const num2 = diff.line2 !== null ? lineNum2++ : '';
+                    const code1 = diff.line1 !== null ? diff.line1 : '';
+                    const code2 = diff.line2 !== null ? diff.line2 : '';
+
+                    const item1 = this.createLineItem(num1, code1, diff.type);
+                    const item2 = this.createLineItem(num2, code2, diff.type);
+                    
+                    if (diff.type === 'modified') {
+                        const code1El = item1.querySelector('.line-code');
+                        const code2El = item2.querySelector('.line-code');
+                        const charDiffs = this.diffChars(code1, code2);
+                        
+                        code1El.innerHTML = '';
+                        code2El.innerHTML = '';
+
+                        charDiffs.forEach(part => {
+                             const el1 = document.createTextNode(part.value);
+                             const el2 = document.createTextNode(part.value);
+
+                            if (part.added) {
+                                const span = document.createElement('span');
+                                span.className = 'char-added';
+                                span.textContent = part.value;
+                                code2El.appendChild(span);
+                            } else if (part.removed) {
+                                const span = document.createElement('span');
+                                span.className = 'char-deleted';
+                                span.textContent = part.value;
+                                code1El.appendChild(span);
+                            } else {
+                                code1El.appendChild(el1);
+                                code2El.appendChild(el2);
+                            }
+                        });
+                    }
+
+                    panel1.appendChild(item1);
+                    panel2.appendChild(item2);
+                });
+                
+                this.setupSynchronizedScrolling(panel1, panel2);
+            }
+            
+            createLineItem(num, code, type) {
+                const item = document.createElement('div');
+                item.className = `line-item ${type}`;
+                item.innerHTML = `
+                    <div class="line-number">${num}</div>
+                    <div class="line-code">${this.escapeHtml(code)}</div>`;
+                return item;
+            }
+
+            // --- Report Generation ---
+            async generateReport() {
+                if (!this.lastComparison) {
+                    alert('Please run a comparison first.');
+                    return;
+                }
+                
+                const format = document.querySelector('input[name="report-format"]:checked').value;
+                const config = {
+                    title: document.getElementById('report-title').value || 'JSON Comparison Report',
+                    includeSummary: document.getElementById('include-summary').checked,
+                    includeDetailed: document.getElementById('include-detailed-diffs').checked,
+                };
+
+                this.showReportProgress(0);
+
+                try {
+                    let content, filename, mimeType;
+                    
+                    switch (format) {
+                        case 'html':
+                            content = this.generateHTMLReport(config);
+                            filename = `${config.title.replace(/\s/g, '_')}.html`;
+                            mimeType = 'text/html';
+                            break;
+                        case 'json':
+                            content = this.generateJSONReport(config);
+                            filename = `${config.title.replace(/\s/g, '_')}.json`;
+                            mimeType = 'application/json';
+                            break;
+                        case 'csv':
+                            content = this.generateCSVReport(config);
+                            filename = `${config.title.replace(/\s/g, '_')}.csv`;
+                            mimeType = 'text/csv';
+                            break;
+                        case 'markdown':
+                            content = this.generateMarkdownReport(config);
+                             filename = `${config.title.replace(/\s/g, '_')}.md`;
+                            mimeType = 'text/markdown';
+                            break;
+                        default:
+                            alert(`Report format "${format}" is not yet supported.`);
+                            this.hideReportProgress();
+                            return;
+                    }
+
+                    this.showReportProgress(100);
+                    this.downloadFile(content, filename, mimeType);
+                    
+                } catch (error) {
+                    console.error("Report generation failed:", error);
+                    alert("Failed to generate report: " + error.message);
+                } finally {
+                    setTimeout(() => {
+                      this.hideReportProgress();
+                      this.hideReportModal();
+                    }, 1000);
+                }
+            }
+
+            downloadFile(content, filename, mimeType) {
+                const blob = new Blob([content], { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+            
+            showReportProgress(percentage) {
+                const container = document.getElementById('report-progress');
+                container.style.display = 'block';
+                document.getElementById('report-progress-bar').style.width = percentage + '%';
+                document.getElementById('report-progress-text').textContent = percentage === 100 ? 'Done!' : `Generating... ${percentage}%`;
+            }
+
+            hideReportProgress() {
+                document.getElementById('report-progress').style.display = 'none';
+            }
+            
+            setupSynchronizedScrolling(panel1, panel2) {
+                let syncing = false;
+                const sync = (source, target) => {
+                    if (!syncing) {
+                        syncing = true;
+                        target.scrollTop = source.scrollTop;
+                        target.scrollLeft = source.scrollLeft;
+                        setTimeout(() => { syncing = false; }, 50);
+                    }
+                };
+                panel1.onscroll = () => sync(panel1, panel2);
+                panel2.onscroll = () => sync(panel2, panel1);
+            }
+            
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        
+            showReportModal() { 
+                if (!this.lastComparison) {
+                    alert('Please run a comparison first.');
+                    return;
+                }
+                document.getElementById('report-modal').classList.add('show');
+                this.updateReportPreview();
+            }
+
+            hideReportModal() { 
+                 document.getElementById('report-modal').classList.remove('show');
+            }
+
+            updateReportPreview() { 
+                const format = document.querySelector('input[name="report-format"]:checked').value;
+                let sections = 1; 
+                if(document.getElementById('include-summary').checked) sections++;
+                if(document.getElementById('include-detailed-diffs').checked) sections++;
+                document.getElementById('preview-sections').textContent = sections;
+                document.getElementById('preview-format').textContent = format.toUpperCase();
+            }
+            
+            collapseResults() {
+                document.getElementById('results-panel').style.display = 'none';
+            }
+        
+            showLoading(show) {
+                document.getElementById('loading').style.display = show ? 'flex' : 'none';
+            }
+        
+            // API Methods
+            async fetchAPI(apiNumber) {
+                const url = document.getElementById(`api-${apiNumber}-url`).value;
+                if (!url) { alert('Please enter a URL'); return; }
+        
+                const method = document.getElementById(`api-${apiNumber}-method`).value;
+                const body = document.getElementById(`api-${apiNumber}-body`).value;
+                const headers = this.getHeaders(apiNumber);
+                
+                this.showLoading(true);
+                try {
+                    const startTime = Date.now();
+                    const options = { method, headers };
+                    if (body && ['POST', 'PUT', 'PATCH'].includes(method)) {
+                        options.body = body;
+                    }
+                    
+                    const response = await fetch(url, options);
+                    const endTime = Date.now();
+                    const responseText = await response.text();
+                    let responseData;
+                    try { responseData = JSON.parse(responseText); } catch { responseData = responseText; }
+                    
+                    this.apiResponses[`api${apiNumber}`] = responseData;
+                    
+                    this.displayAPIResponse(apiNumber, {
+                        status: response.status,
+                        statusText: response.statusText,
+                        data: responseData,
+                        timing: endTime - startTime
+                    });
+                    this.updateCompareResponsesButton();
+                } catch (error) {
+                    alert(`API request failed: ${error.message}`);
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+        
+            getHeaders(apiNumber) {
+                const headers = {};
+                document.querySelectorAll(`#api-${apiNumber}-headers .header-row`).forEach(row => {
+                    const key = row.querySelector('.header-key').value.trim();
+                    const value = row.querySelector('.header-value').value.trim();
+                    if (key && value) headers[key] = value;
+                });
+                return headers;
+            }
+        
+            displayAPIResponse(apiNumber, response) {
+                const container = document.getElementById(`api-${apiNumber}-response`);
+                container.style.display = 'block';
+                document.getElementById(`api-${apiNumber}-meta`).innerHTML = `
+                    <div>Status: ${response.status} ${response.statusText}</div>
+                    <div>Time: ${response.timing}ms</div>`;
+                document.getElementById(`api-${apiNumber}-response-body`).textContent = typeof response.data === 'string' ? response.data : JSON.stringify(response.data, null, 2);
+            }
+        
+            updateCompareResponsesButton() {
+                document.getElementById('compare-responses').style.display = 
+                    (this.apiResponses.api1 && this.apiResponses.api2) ? 'inline-flex' : 'none';
+            }
+        
+            useAPIResponse(apiNumber) {
+                const responseData = this.apiResponses[`api${apiNumber}`];
+                if (!responseData) { alert('No API response to use'); return; }
+                
+                this.switchView('compare');
+                const input = document.getElementById(`json-input-${apiNumber}`);
+                input.value = typeof responseData === 'string' ? responseData : JSON.stringify(responseData, null, 2);
+                this.handleJSONInput(apiNumber);
+            }
+        
+            compareAPIResponses() {
+                if (!this.apiResponses.api1 || !this.apiResponses.api2) { alert('Both API responses are required'); return; }
+                
+                this.switchView('compare');
+                document.getElementById('json-input-1').value = JSON.stringify(this.apiResponses.api1, null, 2);
+                document.getElementById('json-input-2').value = JSON.stringify(this.apiResponses.api2, null, 2);
+                this.handleJSONInput(1);
+                this.handleJSONInput(2);
+                setTimeout(() => this.compareJSONs(), 100);
+            }
+        
+            addHeader(apiNumber) {
+                const container = document.getElementById(`api-${apiNumber}-headers`);
+                const newRow = document.createElement('div');
+                newRow.className = 'header-row';
+                newRow.innerHTML = `
+                    <input type="text" placeholder="Key" class="form-control header-key">
+                    <input type="text" placeholder="Value" class="form-control header-value">
+                    <button class="btn btn--outline btn--sm remove-header">×</button>`;
+                container.appendChild(newRow);
+            }
+        
+            loadSettings() {
+                this.setTheme(document.getElementById('theme-selector').value);
+                this.setFontSize(document.getElementById('font-size').value);
+            }
+        
+            setTheme(theme) {
+                if (theme === 'auto') {
+                    document.documentElement.removeAttribute('data-color-scheme');
+                } else {
+                    document.documentElement.setAttribute('data-color-scheme', theme);
+                }
+                document.getElementById('dark-mode-toggle').textContent = 
+                    (theme === 'dark' || (theme ==='auto' && window.matchMedia('(prefers-color-scheme: dark)').matches))
+                    ? '☀️ Light Mode' : '🌙 Dark Mode';
+            }
+        
+            setFontSize(size) {
+                document.documentElement.style.setProperty('--json-font-size', size);
+                document.querySelectorAll('.json-input, .response-body').forEach(el => el.style.fontSize = size);
+            }
+
+            extractByPath(data, path) {
+                if (!path || path === 'id') {
+                    if (Array.isArray(data)) return data.map(item => ({ id: item.id, data: item }));
+                    if (data && typeof data === 'object') return [{ id: data.id, data }];
+                    throw new Error('No objects with id field found at root');
+                }
+                if (path.includes('[]')) return this.extractFromArrayPath(data, path);
+                return this.extractFromNestedPath(data, path);
+            }
+
+            extractFromArrayPath(data, path) {
+                const [arrayPath, idField] = path.split('[].');
+                const arrayData = this.getNestedValue(data, arrayPath);
+                if (!Array.isArray(arrayData)) throw new Error(`Path ${arrayPath} does not point to an array`);
+                return arrayData
+                    .filter(item => item && typeof item === 'object')
+                    .map(item => ({ id: idField ? this.getNestedValue(item, idField) : item.id, data: item }))
+                    .filter(item => item.id !== undefined);
+            }
+
+            extractFromNestedPath(data, path) {
+                const pathParts = path.split('.');
+                const idField = pathParts.pop();
+                const objectPath = pathParts.join('.');
+                const targetData = objectPath ? this.getNestedValue(data, objectPath) : data;
+                if (Array.isArray(targetData)) {
+                    return targetData
+                        .map(item => ({ id: this.getNestedValue(item, idField), data: item }))
+                        .filter(item => item.id !== undefined);
+                } else if (targetData && typeof targetData === 'object') {
+                    const id = this.getNestedValue(targetData, idField);
+                    if (id !== undefined) return [{ id, data: targetData }];
+                }
+                throw new Error(`No objects found with id field at path ${path}`);
+            }
+
+            getNestedValue(obj, path) {
+                return path.split('.').reduce((current, key) => (current && current[key] !== undefined ? current[key] : undefined), obj);
+            }
+
+            // Diffing logic
+            diffChars(a, b) {
+                const aLen = a.length, bLen = b.length;
+                const matrix = Array(aLen + 1).fill(null).map(() => Array(bLen + 1).fill(null));
+                for(let i=0; i<=aLen; i++) matrix[i][0] = i;
+                for(let j=0; j<=bLen; j++) matrix[0][j] = j;
+
+                for(let i=1; i<=aLen; i++) {
+                    for(let j=1; j<=bLen; j++) {
+                        const cost = a[i-1] === b[j-1] ? 0 : 1;
+                        matrix[i][j] = Math.min(matrix[i-1][j]+1, matrix[i][j-1]+1, matrix[i-1][j-1]+cost);
+                    }
+                }
+
+                let i=aLen, j=bLen;
+                const result = [];
+                while(i>0 || j>0) {
+                    const cost = (i>0 && j>0 && a[i-1] === b[j-1]) ? 0 : 1;
+                    if(i>0 && j>0 && matrix[i][j] === matrix[i-1][j-1] + cost) {
+                        const part = { value: a[i-1] };
+                        if(cost === 1) { // Modified
+                            result.unshift({ removed: true, value: a[i-1] });
+                            result.unshift({ added: true, value: b[j-1] });
+                        } else {
+                            result.unshift(part);
+                        }
+                        i--; j--;
+                    } else if (j>0 && matrix[i][j] === matrix[i][j-1] + 1) {
+                        result.unshift({ added: true, value: b[j-1] });
+                        j--;
+                    } else if (i>0 && matrix[i][j] === matrix[i-1][j] + 1) {
+                        result.unshift({ removed: true, value: a[i-1] });
+                        i--;
+                    } else {
+                        break;
+                    }
+                }
+                 return this.condenseDiff(result);
+            }
+
+             condenseDiff(diffs) {
+                const condensed = [];
+                let current = null;
+                for (const part of diffs) {
+                    if (current && ('added' in current) === ('added' in part) && ('removed' in current) === ('removed' in part)) {
+                        current.value += part.value;
+                    } else {
+                        if (current) condensed.push(current);
+                        current = { ...part };
+                    }
+                }
+                if (current) condensed.push(current);
+                return condensed;
+            }
+
+
+             // Report Generation Helpers
+            generateHTMLReport(config) {
+                const { summary, differences } = this.lastComparison;
+                let body = `<h1>${this.escapeHtml(config.title)}</h1><p>Generated: ${new Date().toLocaleString()}</p>`;
+
+                if (config.includeSummary) {
+                    body += `<h2>Summary</h2>
+                        <p>Total Differences: ${summary.totalDifferences}</p>
+                        <p style="color:var(--diff-added)">Added: ${summary.added}</p>
+                        <p style="color:var(--diff-deleted)">Deleted: ${summary.deleted}</p>
+                        <p style="color:var(--diff-modified)">Modified: ${summary.modified}</p>
+                        <p>Equal Objects: ${summary.equal}</p>`;
+                }
+
+                if (config.includeDetailed) {
+                    body += `<h2>Detailed Differences</h2>` + differences.map(diff => `
+                        <div class="diff-item diff-item--${diff.type}" style="margin-bottom: 1em; padding: 0.5em; border-left: 4px solid var(--diff-${diff.type}); background: var(--diff-${diff.type}-bg);">
+                            <div class="diff-path" style="font-weight: bold;">${this.escapeHtml(diff.path)}</div>
+                            <div class="diff-value" style="padding-left: 1em;">
+                            ${diff.type === 'modified'
+                                ? `<span class="diff-old" style="color: var(--diff-deleted); text-decoration: line-through;">- ${this.formatValue(diff.oldValue)}</span><br><span class="diff-new" style="color: var(--diff-added);">+ ${this.formatValue(diff.newValue)}</span>`
+                                : diff.type === 'added'
+                                ? `<span class="diff-new" style="color: var(--diff-added);">+ ${this.formatValue(diff.value)}</span>`
+                                : `<span class="diff-old" style="color: var(--diff-deleted);">- ${this.formatValue(diff.value)}</span>`
+                            }
+                            </div>
+                        </div>`).join('');
+                }
+                const styleContent = document.querySelector('style').textContent;
+                return `<!DOCTYPE html><html><head><title>${this.escapeHtml(config.title)}</title><style>${styleContent}</style></head><body><div class="container">${body}</div></body></html>`;
+            }
+
+            generateJSONReport(config) {
+                const { summary, differences } = this.lastComparison;
+                const report = {
+                    metadata: { title: config.title, generatedAt: new Date().toISOString() },
+                };
+                if (config.includeSummary) report.summary = summary;
+                if (config.includeDetailed) report.differences = differences;
+                return JSON.stringify(report, null, 2);
+            }
+
+            generateCSVReport(config) {
+                const { differences } = this.lastComparison;
+                let csv = 'Path,Type,Old Value,New Value\n';
+                differences.forEach(d => {
+                    const oldVal = d.type === 'modified' ? d.oldValue : (d.type === 'deleted' ? d.value : '');
+                    const newVal = d.type === 'modified' ? d.newValue : (d.type === 'added' ? d.value : '');
+                    csv += `"${d.path}","${d.type}","${this.formatValueForCSV(oldVal)}","${this.formatValueForCSV(newVal)}"\n`;
+                });
+                return csv;
+            }
+            formatValueForCSV(val) {
+                if (val === null || val === undefined) return '';
+                const str = typeof val === 'object' ? JSON.stringify(val) : String(val);
+                return str.replace(/"/g, '""');
+            }
+
+            generateMarkdownReport(config) {
+                const { summary, differences } = this.lastComparison;
+                let md = `# ${config.title}\n\n`;
+                if (config.includeSummary) {
+                    md += `## Summary\n- **Total Differences:** ${summary.totalDifferences}\n- **Added:** ${summary.added}\n- **Deleted:** ${summary.deleted}\n- **Modified:** ${summary.modified}\n\n`;
+                }
+                if (config.includeDetailed) {
+                    md += `## Differences\n` + differences.map(d => {
+                        let content = `### \`${d.path}\`\n**Type:** ${d.type}\n`;
+                        if (d.type === 'modified') {
+                            content += `\`\`\`diff\n- ${JSON.stringify(d.oldValue)}\n+ ${JSON.stringify(d.newValue)}\n\`\`\``;
+                        } else {
+                            content += `\`\`\`json\n${JSON.stringify(d.value)}\n\`\`\``;
+                        }
+                        return content;
+                    }).join('\n\n');
+                }
+                return md;
+            }
+        }
+        
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            window.jsonComparator = new JSONComparator();
+            
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) e.target.classList.remove('show');
+                if (e.target.classList.contains('modal-close')) e.target.closest('.modal').classList.remove('show');
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal.show').forEach(modal => modal.classList.remove('show'));
+                }
+            });
+        });
+
+    </script>
 </body>
 </html>
+
