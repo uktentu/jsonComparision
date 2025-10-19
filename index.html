@@ -1726,8 +1726,7 @@
           
           .center-controls {
             order: -1;
-            min-width: auto;
-            max-width: none;
+            max-width: 100%;
           }
           
           .api-panels,
@@ -1735,152 +1734,59 @@
             grid-template-columns: 1fr;
             gap: var(--space-16);
           }
-          
-          .side-by-side {
-            grid-template-columns: 1fr;
+        }
+        
+        @media (max-width: 768px) {
+          .header-controls {
+            flex-direction: column;
+            align-items: stretch;
           }
           
-          .format-grid {
-            grid-template-columns: repeat(2, 1fr);
+          .view-mode-toggle {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
           }
           
-          .line-content {
-            grid-template-columns: 1fr;
+          .nav-tabs {
+            flex-wrap: wrap;
           }
-          
-          .line-header {
-            grid-template-columns: 1fr;
+
+          .line-content, .side-by-side {
+              grid-template-columns: 1fr;
+          }
+
+          .line-panel, .side-panel {
+              border-right: none;
+              margin-bottom: var(--space-16);
           }
           
           .stats-grid {
             grid-template-columns: repeat(2, 1fr);
           }
+          
+          h1.app-title { font-size: var(--font-size-3xl); }
         }
-        
-        @media (max-width: 768px) {
-          .nav-tabs {
-            flex-direction: column;
-            gap: var(--space-4);
-          }
-          
-          .panel-header {
-            flex-direction: column;
-            gap: var(--space-8);
-            align-items: stretch;
-          }
-          
-          .panel-controls {
-            flex-wrap: wrap;
-          }
-          
-          .json-input {
-            height: 300px;
-          }
-          
-          .results-header {
-            flex-direction: column;
-            gap: var(--space-8);
-            align-items: stretch;
-          }
-          
-          .results-controls {
-            justify-content: center;
-            flex-wrap: wrap;
-          }
-          
-          .filter-controls {
-            justify-content: center;
-            margin-bottom: var(--space-8);
-          }
-          
-          .search-input {
-            width: 100%;
-            margin-bottom: var(--space-8);
-          }
-          
-          .summary-stats {
-            grid-template-columns: repeat(2, 1fr);
-          }
-          
-          .view-mode-toggle {
-            grid-template-columns: repeat(2, 1fr);
-            display: grid;
-          }
-          
-          .format-grid {
-            grid-template-columns: 1fr;
-          }
-          
-          .config-grid {
-            grid-template-columns: 1fr;
-          }
-          
-          .checkbox-grid {
-            grid-template-columns: 1fr;
-          }
-          
-          .shortcuts-grid {
-            grid-template-columns: 1fr;
-          }
-          
-          .report-modal-content {
-            width: 98%;
-            margin: var(--space-8);
-          }
-          
-          .modal-actions {
-            flex-direction: column;
-          }
-        }
-        
+
         @media (max-width: 480px) {
           .container {
             padding-left: var(--space-8);
             padding-right: var(--space-8);
           }
-          
-          .main-content {
-            padding: var(--space-16) 0;
+
+          .results-header, .panel-header {
+              flex-direction: column;
+              gap: var(--space-12);
+              align-items: stretch;
           }
-          
-          .app-title {
-            font-size: var(--font-size-2xl);
+          .results-controls {
+              flex-direction: column;
+              align-items: stretch;
           }
-          
-          .summary-stats {
-            grid-template-columns: 1fr;
+          .filter-controls {
+              justify-content: space-around;
           }
-          
-          .results-tabs {
-            flex-wrap: wrap;
-            justify-content: center;
-          }
-          
-          .results-tab {
-            flex: 1;
-            min-width: 80px;
-            font-size: var(--font-size-xs);
-          }
-          
-          .stats-grid {
-            grid-template-columns: 1fr;
-          }
-          
-          .diff-navigation {
-            flex-direction: column;
-            gap: var(--space-4);
-          }
-          
-          .line-by-line-container {
-            height: 400px;
-          }
-          
-          .view-toggle-btn {
-            padding: var(--space-4) var(--space-8);
-          }
-          
-          .view-toggle-btn .icon {
-            display: none;
+          .search-input {
+              width: 100%;
           }
         }
         
